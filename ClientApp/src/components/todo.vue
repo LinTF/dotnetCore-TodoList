@@ -7,44 +7,55 @@
             </button>
         </h3>
         <div class="todo-block">
-            <ul>
-                <li v-for="(todoItem, itemIndex) in todo.item" :key="todoItem.text" 
-                    class="row item"
-                    :style="{ 'background-color': todoItem.isFinish === false ? '#f8e4cc' : '#fff' }" 
-                    draggable="true"
-                    @dragstart="dragstart($event, itemIndex, todo.date)"
-                    @dragenter="dragenter($event, itemIndex, todo.date)"
-                    @dragend="dragend"
-                    @dragover="dragover">
-                    <div class="col-7 vertical-center">
-                        <input type="checkbox" :id="todo.date+itemIndex"
-                            :name="todo.date+itemIndex" 
-                            @change="getCheckedItem(dateIndex, itemIndex)"
-                            :checked="todoItem.isFinish"
-                            :disabled="todoItem.isFinish">
-                        <span>{{ itemIndex + 1 + ". &nbsp;" }}</span>
-                        <label :for="todo.date+itemIndex" 
-                            :style="{ 'text-decoration': todoItem.isFinish === true ? 'line-through' : 'none' }">
-                            {{ todoItem.text }}
-                        </label>
-                    </div>
-                    <div class="col-5 btn-block">
-                        <button type="submit" class="btn btn-danger mb-3" 
-                        :style="{ visibility: todo.isEdit === true ? 'unset' : 'hidden', 
-                                display: todo.isEdit === false && todoItem.isFinish === true ? 'none' : 'block' }" 
-                        @click="deleteTodoItem(todo.date, dateIndex, itemIndex, todoItem.text)">刪除</button>
+            <div>
+                <draggable 
+                    group="group"
+                    :list="todo.item"
+                    :item-key="item => item.text"
+                    :force-fallback="true"
+                    chosen-class="chosen"
+                    animation="300"
+                    @start="onStart"
+                    @end="onEnd">
 
-                        <button type="submit" class="btn return mb-3" 
-                        :style="{ display: todo.isEdit === false && todoItem.isFinish === true ? 'block' : 'none' }" 
-                        @click="getCheckedItem(dateIndex, itemIndex)">取消勾選</button>
-                    </div>
-                </li>
-            </ul>
+                    <template #item="{ element, index }">
+                        <div 
+                            class="row item"
+                            :style="{ 'background-color': element.isFinish === false ? '#f8e4cc' : '#fff' }">
+        
+                            <div class="col-7 vertical-center">
+                                <input type="checkbox" :id="todo.date+index"
+                                    :name="todo.date+index" 
+                                    @change="getCheckedItem(dateIndex, index)"
+                                    :checked="element.isFinish"
+                                    :disabled="element.isFinish">
+                                <span>{{ index + 1 + ". &nbsp;" }}</span>
+                                <label :for="todo.date+index" 
+                                    :style="{ 'text-decoration': element.isFinish === true ? 'line-through' : 'none' }">
+                                    {{ element.text }}
+                                </label>
+                            </div>
+                            <div class="col-5 btn-block">
+                                <button type="submit" class="btn btn-danger mb-3" 
+                                :style="{ visibility: todo.isEdit === true ? 'unset' : 'hidden', 
+                                        display: todo.isEdit === false && element.isFinish === true ? 'none' : 'block' }" 
+                                @click="deleteTodoItem(todo.date, dateIndex, index, element.text)">刪除</button>
+        
+                                <button type="submit" class="btn return mb-3" 
+                                :style="{ display: todo.isEdit === false && element.isFinish === true ? 'block' : 'none' }" 
+                                @click="getCheckedItem(dateIndex, index)">取消勾選</button>
+                            </div>
+                        </div>
+                    </template>
+                </draggable>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
+    import draggable from 'vuedraggable'
+
     export default {
         name: 'todo',
         props: {
@@ -55,9 +66,11 @@
         },
         data() {
             return {
-                dragIndex: 0,
-                dragDate: "1911/01/01"
+                
             }
+        },
+        components: {
+            draggable
         },
         methods: {
             deleteTodoItem(date, dateIndex, itemIndex, itemText) {
@@ -92,43 +105,18 @@
                 }
             },
             getCheckedItem(dateIndex, itemIndex) {
-                console.log(dateIndex + ',,' + itemIndex)
-
                 this.propsTodo[dateIndex].item[itemIndex].isFinish = !this.propsTodo[dateIndex].item[itemIndex].isFinish
 
                 // 將 localStorage 陣列裝回
                 localStorage.setItem('todoItem', JSON.stringify(this.propsTodo));
             },
-            dragstart(e, index, date) {
-                e.stopPropagation()
-                this.dragIndex = index
-                this.dragDate = date
-                setTimeout(() => {
-                    e.target.classList.add('moveing')
-                },0)
+            onStart() {
+                
             },
-            dragenter(e, index, date) {
-                e.preventDefault()
-                // 與原本 index
-                if (this.dragDate === date && this.dragIndex !== index) {
-                    const dateData = this.propsTodo.find(item => item.date === date);
-                    const source = dateData.item[this.dragIndex];
-                    dateData.item.splice(this.dragIndex, 1);
-                    dateData.item.splice(index, 0, source);
-
-                    // 更新 index
-                    this.dragIndex = index
-
-                    // 將 localStorage 陣列裝回
-                    localStorage.setItem('todoItem', JSON.stringify(this.propsTodo));
-                }
-            },
-            dragover(e) {
-                e.preventDefault()
-                e.dataTransfer.dropEffect = 'move'
-            },
-            dragend(e) {
-                e.target.classList.remove('moveing')
+            onEnd() {
+                console.log(this.propsTodo);
+                // 將 localStorage 陣列裝回
+                localStorage.setItem('todoItem', JSON.stringify(this.propsTodo));
             }
         }
     }

@@ -8,7 +8,7 @@ import mkcert from 'vite-plugin-mkcert'
 export default defineConfig({
   plugins: [
     vue(),
-    mkcert()
+    mkcert(),
   ],
   server: {
     port: 44438,
