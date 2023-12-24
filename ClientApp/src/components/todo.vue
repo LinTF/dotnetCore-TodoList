@@ -21,14 +21,14 @@
                     <template #item="{ element, index }">
                         <div 
                             class="row item"
-                            :style="{ 'background-color': element.isFinish === false ? '#f8e4cc' : '#fff' }">
+                            :style="{ 'background-color': element.isFinish === false ? '#f8e4cc' : '#fff', 'visibility': element.text !== '' ? 'unset' : 'hidden' }">
         
                             <div class="col-7 vertical-center">
                                 <input type="checkbox" :id="todo.date+index"
-                                    :name="todo.date+index" 
-                                    @change="getCheckedItem(dateIndex, index)"
-                                    :checked="element.isFinish"
-                                    :disabled="element.isFinish">
+                                        :name="todo.date+index" 
+                                        @change="getCheckedItem(dateIndex, index)"
+                                        :checked="element.isFinish"
+                                        :disabled="element.isFinish">
                                 <span>{{ index + 1 + ". &nbsp;" }}</span>
                                 <label :for="todo.date+index" 
                                     :style="{ 'text-decoration': element.isFinish === true ? 'line-through' : 'none' }">
