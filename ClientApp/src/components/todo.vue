@@ -111,7 +111,6 @@
             },
             onStart() {},
             onEnd() {
-                console.log(this.propsTodo);
                 // 將 localStorage 陣列裝回
                 localStorage.setItem('todoItem', JSON.stringify(this.propsTodo));
             }

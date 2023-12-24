@@ -97,7 +97,8 @@
   
             // 如果已存在，就新增該日期的資料，不存在就新增包含日期的資料
             if (hasDateData) {
-              hasDateData.item.push({ text: todoItemText, isFinish: false });
+              const newData = { text: todoItemText, isFinish: false }
+              hasDateData.item.splice(0, 0, newData)
             } else {
               const newTodoItem = { date: formatSelDate, isEdit: false, item: [{ text: todoItemText, isFinish: false }] };
               this.todoItem.push(newTodoItem);
