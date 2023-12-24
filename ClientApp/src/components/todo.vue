@@ -21,7 +21,7 @@
                     <template #item="{ element, index }">
                         <div 
                             class="row item"
-                            :style="{ 'background-color': element.isFinish === false ? '#f8e4cc' : '#fff', 'visibility': element.text !== '' ? 'unset' : 'hidden' }">
+                            :style="{ 'background-color': element.isFinish === false ? '#f8e4cc' : '#fff' }">
         
                             <div class="col-7 vertical-center">
                                 <input type="checkbox" :id="todo.date+index"
@@ -66,7 +66,6 @@
         },
         data() {
             return {
-                
             }
         },
         components: {
@@ -110,9 +109,7 @@
                 // 將 localStorage 陣列裝回
                 localStorage.setItem('todoItem', JSON.stringify(this.propsTodo));
             },
-            onStart() {
-                
-            },
+            onStart() {},
             onEnd() {
                 console.log(this.propsTodo);
                 // 將 localStorage 陣列裝回

@@ -99,9 +99,7 @@
             if (hasDateData) {
               hasDateData.item.push({ text: todoItemText, isFinish: false });
             } else {
-              // 因拖拉至其他日期下的最後一筆，會無法拖拉過去，所以裝一個空白的項目，使得順利拖拉
-              const newTodoItem = { date: formatSelDate, isEdit: false, 
-                                    item: [{ text: todoItemText, isFinish: false }, { text: "", isFinish: false }] };
+              const newTodoItem = { date: formatSelDate, isEdit: false, item: [{ text: todoItemText, isFinish: false }] };
               this.todoItem.push(newTodoItem);
             }
   
