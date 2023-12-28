@@ -29,7 +29,7 @@ namespace TodoList.Models
         /// 待辦清單
         /// </summary>
         /// <value></value>
-        public List<TodoItemDetail> TodoItems { get; set; }
+        public List<TodoItemDetail> TodoItems { get; set; } = new List<TodoItemDetail>();
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ namespace TodoList.Models
         /// 待辦事項文字
         /// </summary>
         /// <value></value>
-        public string ItemText { get; set; }
+        public string ItemText { get; set; } = "";
         /// <summary>
         /// 是否已完成
         /// </summary>
