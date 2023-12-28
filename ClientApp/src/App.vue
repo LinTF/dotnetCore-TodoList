@@ -32,6 +32,9 @@
           </div>
         </div>
       </div>
+      <div>
+        <button type="submit" class="btn btn-primary mb-3" @click="apiTest">API</button>
+      </div>
       <hr />
     </div>
     <div class="container-fluid">
@@ -43,6 +46,7 @@
   
   <script>
     import todo from "@/components/todo.vue"
+    import axios from 'axios'
   
     export default {
       name: 'todoList',
@@ -155,6 +159,11 @@
             this.todoItem = [];
             localStorage.clear();
           }
+        },
+        async apiTest() {
+          const aaa = await axios.get("https://localhost:7268/WeatherForecast")
+
+          console.log(aaa.data);
         }
       },
       computed: {
