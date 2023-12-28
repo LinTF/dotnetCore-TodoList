@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using TodoList.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // 先實現跨域再訪問，因此要放在底下程式之下，在此配置的是前端vue的網址。
@@ -11,6 +14,9 @@ builder.Services.AddCors(options =>
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+builder.Services.AddDbContext<TodoContext>(opt =>
+    opt.UseInMemoryDatabase("TodoList"));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
