@@ -31,21 +31,4 @@ namespace TodoList.Models
         /// <value></value>
         public List<TodoItemDetail> TodoItems { get; set; } = new List<TodoItemDetail>();
     }
-
-    /// <summary>
-    /// 某日期中的待辦事項
-    /// </summary>
-    public class TodoItemDetail 
-    {
-        /// <summary>
-        /// 待辦事項文字
-        /// </summary>
-        /// <value></value>
-        public string ItemText { get; set; } = "";
-        /// <summary>
-        /// 是否已完成
-        /// </summary>
-        /// <value></value>
-        public Boolean isFinish { get; set; } = false;
-    }
 }
