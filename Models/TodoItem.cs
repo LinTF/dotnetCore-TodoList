@@ -21,12 +21,6 @@ namespace TodoList.Models
         public DateOnly ItemDate { get; set; }
 
         /// <summary>
-        /// 是否編輯
-        /// </summary>
-        /// <value></value>
-        public Boolean IsEdit { get; set; } = false;
-
-        /// <summary>
         /// 待辦清單
         /// </summary>
         /// <value></value>
