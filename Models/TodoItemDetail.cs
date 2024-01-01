@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace TodoList.Models
@@ -8,9 +9,9 @@ namespace TodoList.Models
     /// <summary>
     /// 某日期中的待辦事項
     /// </summary>
-    public class TodoItemDetail 
+    public class TodoItemDetail
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         /// <summary>
         /// 待辦事項文字
         /// </summary>
@@ -21,5 +22,10 @@ namespace TodoList.Models
         /// </summary>
         /// <value></value>
         public Boolean isFinish { get; set; } = false;
+
+
+        public int? TodoItemId { get; set; }
+        [JsonIgnore]
+        public TodoItem? TodoItem { get; set; }
     }
 }

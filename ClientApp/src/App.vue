@@ -161,8 +161,8 @@
           }
         },
         async apiTest() {
-          // const aaa = await axios.get("https://localhost:7268/WeatherForecast")
-          const aaa = await axios.get("https://localhost:7268/api/TodoList/GetTodoItems")
+          const aaa = await axios.get("https://localhost:7268/api/TodoItems")
+          // const aaa = await axios.get("https://localhost:7268/api/TodoItems/2")
 
           console.log(aaa.data);
         }

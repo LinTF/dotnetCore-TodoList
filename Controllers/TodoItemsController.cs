@@ -28,7 +28,7 @@ namespace TodoList.Controllers
           {
               return NotFound();
           }
-            return await _context.TodoItems.ToListAsync();
+            return await _context.TodoItems.Include(todoItem => todoItem.TodoItemDetail).ToListAsync();
         }
 
         // GET: api/TodoItems/5
@@ -39,7 +39,7 @@ namespace TodoList.Controllers
           {
               return NotFound();
           }
-            var todoItem = await _context.TodoItems.FindAsync(id);
+            var todoItem = await _context.TodoItems.Include(todoItem => todoItem.TodoItemDetail).FirstOrDefaultAsync(todoItem => todoItem.Id == id);
 
             if (todoItem == null)
             {
@@ -54,7 +54,7 @@ namespace TodoList.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTodoItem(int id, TodoItem todoItem)
         {
-            if (id != todoItem.ID)
+            if (id != todoItem.Id)
             {
                 return BadRequest();
             }
@@ -92,7 +92,7 @@ namespace TodoList.Controllers
             _context.TodoItems.Add(todoItem);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTodoItem", new { id = todoItem.ID }, todoItem);
+            return CreatedAtAction("GetTodoItem", new { id = todoItem.Id }, todoItem);
         }
 
         // DELETE: api/TodoItems/5
@@ -115,9 +115,42 @@ namespace TodoList.Controllers
             return NoContent();
         }
 
+        // DELETE: api/TodoItems/5/TodoItemDetails/6
+        [HttpDelete("{id}/TodoItemDetails/{itemDetailsId}")]
+        public async Task<IActionResult> DeleteTodoItemDetail(int id, int itemDetailsId)
+        {
+            if (_context.TodoItems == null)
+            {
+                return NotFound();
+            }
+            var todoItem = await _context.TodoItems.FindAsync(id);
+            if (todoItem == null)
+            {
+                return NotFound();
+            }
+
+            var todoItemDetail = await _context.TodoItemDetail.FindAsync(itemDetailsId);
+            if (todoItemDetail == null)
+            {
+                return NotFound();
+            }
+
+            // _context.TodoItems.Remove(todoItem);
+            _context.TodoItemDetail.Remove(todoItemDetail);
+            await _context.SaveChangesAsync();
+
+            var todoItemCount = await _context.TodoItems.Include(todoItem => todoItem.TodoItemDetail).FirstOrDefaultAsync(todoItem => todoItem.Id == id);
+            if (todoItemCount.TodoItemDetail.Count == 0)
+            {
+                await DeleteTodoItem(id);
+            }
+
+            return NoContent();
+        }
+
         private bool TodoItemExists(int id)
         {
-            return (_context.TodoItems?.Any(e => e.ID == id)).GetValueOrDefault();
+            return (_context.TodoItems?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
