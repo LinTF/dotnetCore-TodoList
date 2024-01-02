@@ -120,26 +120,6 @@ namespace TodoList.Controllers
             return CreatedAtAction("GetTodoItem", new { id = todoItem.Id }, todoItem);
         }
 
-        // DELETE: api/TodoItems/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTodoItem(int id)
-        {
-            if (_context.TodoItems == null)
-            {
-                return NotFound();
-            }
-            var todoItem = await _context.TodoItems.FindAsync(id);
-            if (todoItem == null)
-            {
-                return NotFound();
-            }
-
-            _context.TodoItems.Remove(todoItem);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
         // DELETE: api/TodoItems/5/TodoItemDetails/6
         [HttpDelete("{id}/TodoItemDetails/{itemDetailsId}")]
         public async Task<IActionResult> DeleteTodoItemDetail(int id, int itemDetailsId)
@@ -167,7 +147,8 @@ namespace TodoList.Controllers
             var todoItemCount = await _context.TodoItems.Include(todoItem => todoItem.TodoItemDetail).FirstOrDefaultAsync(todoItem => todoItem.Id == id);
             if (todoItemCount.TodoItemDetail.Count == 0)
             {
-                await DeleteTodoItem(id);
+                _context.TodoItems.Remove(todoItem);
+                await _context.SaveChangesAsync();
             }
 
             return NoContent();
