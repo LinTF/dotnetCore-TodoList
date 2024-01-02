@@ -32,6 +32,7 @@ namespace TodoList.Controllers
         }
 
         // GET: api/TodoItems/5
+        // 暫不使用
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoItem>> GetTodoItem(int id)
         {
@@ -50,7 +51,7 @@ namespace TodoList.Controllers
         }
 
         // PUT: api/TodoItems/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // 暫不使用
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTodoItem(int id, TodoItem todoItem)
         {
@@ -118,6 +119,26 @@ namespace TodoList.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetTodoItem", new { id = todoItem.Id }, todoItem);
+        }
+
+        // DELETE: api/TodoItems/empty
+        [HttpDelete("empty")]
+        public async Task<IActionResult> DeleteTodoItem(int id)
+        {
+            if (_context.TodoItems == null)
+            {
+                return NotFound();
+            }
+            var todoItem = await _context.TodoItems.FindAsync(id);
+            if (todoItem == null)
+            {
+                return NotFound();
+            }
+
+            _context.TodoItems.Remove(todoItem);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         // DELETE: api/TodoItems/5/TodoItemDetails/6
