@@ -80,6 +80,31 @@ namespace TodoList.Controllers
             return NoContent();
         }
 
+        // PUT: api/TodoItems/5/TodoItemDetails/2
+        [HttpPut("{id}/TodoItemDetails/{itemDetailsId}")]
+        public async Task<IActionResult> PutTodoItemDetail(int id, int itemDetailsId, TodoItemDetail todoItemDetail)
+        {
+            var todoItem = await _context.TodoItems.FindAsync(id);
+            if (todoItem == null)
+            {
+                return BadRequest();
+            }
+
+            var itemDetail = await _context.TodoItemDetail.FindAsync(itemDetailsId);
+            if (itemDetail == null)
+            {
+                return BadRequest();
+            }
+
+            itemDetail.isFinish = todoItemDetail.isFinish;
+
+            _context.Entry(itemDetail).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
         // POST: api/TodoItems
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]

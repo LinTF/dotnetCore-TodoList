@@ -175,23 +175,13 @@
           for (const todo of this.todoItem ) {
             todo.isEdit = false;
           }
-
-          // if (todoListData) {
-          //   try {
-          //     this.todoItem = todoListData.data;
-          //   } catch(error) {
-          //     // console.error("Error parsing todo list data:", error);
-          //   }
-
-            
-          // }
         }
       },
       computed: {
         todoItemSort() {
           return this.todoItem.sort((a, b) => {
-            const dateA = new Date(a.date);
-            const dateB = new Date(b.date);
+            const dateA = new Date(a.itemDate);
+            const dateB = new Date(b.itemDate);
   
             return dateB - dateA;
           });

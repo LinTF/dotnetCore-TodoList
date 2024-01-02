@@ -26,7 +26,7 @@
                             <div class="col-7 vertical-center">
                                 <input type="checkbox" :id="todo.itemDate+index"
                                         :name="todo.itemDate+index" 
-                                        @change="getCheckedItem(dateIndex, index)"
+                                        @change="getCheckedItem(todo.id ,element)"
                                         :checked="element.isFinish"
                                         :disabled="element.isFinish">
                                 <span>{{ index + 1 + ". &nbsp;" }}</span>
@@ -43,7 +43,7 @@
         
                                 <button type="submit" class="btn return mb-3" 
                                 :style="{ display: todo.isEdit === false && element.isFinish === true ? 'block' : 'none' }" 
-                                @click="getCheckedItem(dateIndex, index)">取消勾選</button>
+                                @click="getCheckedItem(todo.id ,element)">取消勾選</button>
                             </div>
                         </div>
                     </template>
@@ -56,6 +56,7 @@
 <script>
     import draggable from 'vuedraggable'
     import { formatDate } from '@/assets/js/formatDate';
+    import axios from 'axios'
 
     export default {
         name: 'todo',
@@ -106,16 +107,19 @@
                     }
                 }
             },
-            getCheckedItem(dateIndex, itemIndex) {
-                this.propsTodo[dateIndex].item[itemIndex].isFinish = !this.propsTodo[dateIndex].item[itemIndex].isFinish
-
-                // 將 localStorage 陣列裝回
-                localStorage.setItem('todoItem', JSON.stringify(this.propsTodo));
+            getCheckedItem(id, data) {
+                // 將資料使用 api 回傳至後端
+                data.isFinish = !data.isFinish
+                this.putApi_todoData(id, data)
             },
             onStart() {},
             onEnd() {
                 // 將 localStorage 陣列裝回
                 localStorage.setItem('todoItem', JSON.stringify(this.propsTodo));
+            },
+            async putApi_todoData(id, data) {
+                const url = "https://localhost:7268/api/TodoItems/" + id + "/TodoItemDetails/" + data.id;
+                await axios.put(url, data)
             }
         }
     }
