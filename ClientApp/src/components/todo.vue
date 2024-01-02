@@ -1,8 +1,8 @@
 <template>
     <div class="col-xl-4 col-md-6 date-black" v-for="(todo, dateIndex) in propsTodo" :key="dateIndex">
-        <h3>{{ todo.date }}
+        <h3>{{ formatDate(todo.itemDate) }}
             <button class="del-icon" 
-                @click="showDelBtn(todo.date)">
+                @click="showDelBtn(todo.itemDate)">
                 <i class="fa-regular fa-trash-can"></i>
             </button>
         </h3>
@@ -10,8 +10,8 @@
             <div>
                 <draggable 
                     group="group"
-                    :list="todo.item"
-                    :item-key="item => item.text"
+                    :list="todo.todoItemDetail"
+                    :item-key="detail => detail.id"
                     :force-fallback="true"
                     chosen-class="chosen"
                     animation="300"
@@ -24,22 +24,22 @@
                             :style="{ 'background-color': element.isFinish === false ? '#f8e4cc' : '#fff' }">
         
                             <div class="col-7 vertical-center">
-                                <input type="checkbox" :id="todo.date+index"
-                                        :name="todo.date+index" 
+                                <input type="checkbox" :id="todo.itemDate+index"
+                                        :name="todo.itemDate+index" 
                                         @change="getCheckedItem(dateIndex, index)"
                                         :checked="element.isFinish"
                                         :disabled="element.isFinish">
                                 <span>{{ index + 1 + ". &nbsp;" }}</span>
-                                <label :for="todo.date+index" 
+                                <label :for="todo.itemDate+index" 
                                     :style="{ 'text-decoration': element.isFinish === true ? 'line-through' : 'none' }">
-                                    {{ element.text }}
+                                    {{ element.itemText }}
                                 </label>
                             </div>
                             <div class="col-5 btn-block">
                                 <button type="submit" class="btn btn-danger mb-3" 
                                 :style="{ visibility: todo.isEdit === true ? 'unset' : 'hidden', 
                                         display: todo.isEdit === false && element.isFinish === true ? 'none' : 'block' }" 
-                                @click="deleteTodoItem(todo.date, dateIndex, index, element.text)">刪除</button>
+                                @click="deleteTodoItem(todo.itemDate, dateIndex, index, element.itemText)">刪除</button>
         
                                 <button type="submit" class="btn return mb-3" 
                                 :style="{ display: todo.isEdit === false && element.isFinish === true ? 'block' : 'none' }" 
@@ -55,6 +55,7 @@
 
 <script>
     import draggable from 'vuedraggable'
+    import { formatDate } from '@/assets/js/formatDate';
 
     export default {
         name: 'todo',
@@ -66,6 +67,8 @@
         },
         data() {
             return {
+                // public js
+                formatDate
             }
         },
         components: {
@@ -96,7 +99,7 @@
             },
             showDelBtn(dateVal) {
                 for (const todo of this.propsTodo) {
-                    if (todo.date === dateVal) {
+                    if (todo.itemDate === dateVal) {
                         todo.isEdit = !todo.isEdit;
                     } else {
                         todo.isEdit = false;

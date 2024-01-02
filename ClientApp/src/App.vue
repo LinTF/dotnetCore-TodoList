@@ -60,12 +60,14 @@
       components: {
         todo
       },
-      created() {
-        // 當元件被建立時讀取 localstorage 資料
-        const todoListData = localStorage.getItem("todoItem");
-        if (todoListData) {
-          this.todoItem = JSON.parse(todoListData);
-        }
+      async created() {
+        // // 當元件被建立時讀取 localstorage 資料
+        // const todoListData = localStorage.getItem("todoItem");
+        // if (todoListData) {
+        //   this.todoItem = JSON.parse(todoListData);
+        // }
+
+        this.getApi_todoData();
   
         // 日期元件
         const today = new Date();
@@ -165,6 +167,24 @@
           // const aaa = await axios.get("https://localhost:7268/api/TodoItems/2")
 
           console.log(aaa.data);
+        },
+        async getApi_todoData() {
+          const todoListData = await axios.get("https://localhost:7268/api/TodoItems");
+          this.todoItem = todoListData.data;
+
+          for (const todo of this.todoItem ) {
+            todo.isEdit = false;
+          }
+
+          // if (todoListData) {
+          //   try {
+          //     this.todoItem = todoListData.data;
+          //   } catch(error) {
+          //     // console.error("Error parsing todo list data:", error);
+          //   }
+
+            
+          // }
         }
       },
       computed: {
