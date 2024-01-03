@@ -60,7 +60,7 @@
       components: {
         todo
       },
-      async created() {
+      created() {
         // // 當元件被建立時讀取 localstorage 資料
         // const todoListData = localStorage.getItem("todoItem");
         // if (todoListData) {
@@ -158,8 +158,14 @@
         clearTodoList() {
           const result = confirm("您確定要清空全部待辦事項嗎？")
           if (result) {
-            this.todoItem = [];
-            localStorage.clear();
+            // this.todoItem = [];
+            // localStorage.clear();
+            
+            this.api_emptyData()
+              .then(() => {
+                // 再次取得資料
+                this.getApi_todoData();
+              });
           }
         },
         async apiTest() {
@@ -175,6 +181,12 @@
           for (const todo of this.todoItem ) {
             todo.isEdit = false;
           }
+        },
+        async api_emptyData() {
+          // const emptyApi = await axios.delete("https://localhost:7268/api/TodoItems/empty");
+          // emptyApi.data;
+
+          await axios.delete("https://localhost:7268/api/TodoItems/empty");
         }
       },
       computed: {

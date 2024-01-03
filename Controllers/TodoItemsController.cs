@@ -123,19 +123,19 @@ namespace TodoList.Controllers
 
         // DELETE: api/TodoItems/empty
         [HttpDelete("empty")]
-        public async Task<IActionResult> DeleteTodoItem(int id)
+        public async Task<IActionResult> DeleteTodoItemAll()
         {
             if (_context.TodoItems == null)
             {
                 return NotFound();
             }
-            var todoItem = await _context.TodoItems.FindAsync(id);
-            if (todoItem == null)
-            {
+
+            if (_context.TodoItemDetail == null) {
                 return NotFound();
             }
 
-            _context.TodoItems.Remove(todoItem);
+            _context.TodoItems.RemoveRange(_context.TodoItems);
+            _context.TodoItemDetail.RemoveRange(_context.TodoItemDetail);
             await _context.SaveChangesAsync();
 
             return NoContent();
