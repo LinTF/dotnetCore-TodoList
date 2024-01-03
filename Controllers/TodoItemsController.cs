@@ -166,7 +166,7 @@ namespace TodoList.Controllers
             await _context.SaveChangesAsync();
 
             var todoItemCount = await _context.TodoItems.Include(todoItem => todoItem.TodoItemDetail).FirstOrDefaultAsync(todoItem => todoItem.Id == id);
-            if (todoItemCount.TodoItemDetail.Count == 0)
+            if (todoItemCount?.TodoItemDetail?.Count == 0)
             {
                 _context.TodoItems.Remove(todoItem);
                 await _context.SaveChangesAsync();
