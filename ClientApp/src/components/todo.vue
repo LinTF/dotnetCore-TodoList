@@ -12,7 +12,7 @@
                     group="group"
                     :list="todo.todoItemDetail"
                     :item-key="detail => detail.id"
-                    :force-fallback="true"
+                    :force-fallback="false"
                     chosen-class="chosen"
                     animation="300"
                     @start="onStart"
