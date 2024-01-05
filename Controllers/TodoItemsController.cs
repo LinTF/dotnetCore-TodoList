@@ -97,7 +97,7 @@ namespace TodoList.Controllers
                 return BadRequest();
             }
 
-            itemDetail.isFinish = todoItemDetail.isFinish;
+            itemDetail.IsFinish = todoItemDetail.IsFinish;
 
             _context.Entry(itemDetail).State = EntityState.Modified;
 

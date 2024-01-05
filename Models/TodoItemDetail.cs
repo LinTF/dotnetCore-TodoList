@@ -21,7 +21,12 @@ namespace TodoList.Models
         /// 是否已完成
         /// </summary>
         /// <value></value>
-        public Boolean isFinish { get; set; } = false;
+        public Boolean IsFinish { get; set; } = false;
+        /// <summary>
+        /// 排序
+        /// </summary>
+        /// <value></value>
+        public int SortId { get; set; }
 
 
         public int? TodoItemId { get; set; }
