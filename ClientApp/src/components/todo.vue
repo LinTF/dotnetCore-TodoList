@@ -39,7 +39,7 @@
                                 <button type="submit" class="btn btn-danger mb-3" 
                                 :style="{ visibility: todo.isEdit === true ? 'unset' : 'hidden', 
                                         display: todo.isEdit === false && element.isFinish === true ? 'none' : 'block' }" 
-                                @click="deleteTodoItem(todo.itemDate, dateIndex, index, element.itemText)">刪除</button>
+                                @click="deleteTodoItem(todo.id, element.id, todo.itemDate, element.itemText)">刪除</button>
         
                                 <button type="submit" class="btn return mb-3" 
                                 :style="{ display: todo.isEdit === false && element.isFinish === true ? 'block' : 'none' }" 
@@ -72,30 +72,36 @@
                 formatDate
             }
         },
+        emits: ['updatePropsTodo'],
         components: {
             draggable
         },
         methods: {
-            deleteTodoItem(date, dateIndex, itemIndex, itemText) {
-                const checkDelete = confirm("您確定要刪除 " + date + '-' + itemText + " 嗎？");
+            deleteTodoItem(dateID, itemID, date, itemText) {
+                const checkDelete = confirm("您確定要刪除 " + formatDate(date) + '：' + itemText + " 嗎？");
                 if (checkDelete) {
-                    // 先找到要刪除的日期
-                    const dateData = this.propsTodo.find(item => item.date === date);
-                    // 計算該日期有幾筆資料
-                    const dataCount = dateData.item.length;
+                    // // 先找到要刪除的日期
+                    // const dateData = this.propsTodo.find(item => item.date === date);
+                    // // 計算該日期有幾筆資料
+                    // const dataCount = dateData.item.length;
 
-                    // 如果資料量大於一筆，則刪除該項目，其他．則將該日期資料全刪除
-                    if (dataCount > 1) {
-                        dateData.item.splice(itemIndex, 1);
-                    } else {
-                        this.propsTodo.splice(dateIndex, 1);
-                    }
+                    // // 如果資料量大於一筆，則刪除該項目，其他．則將該日期資料全刪除
+                    // if (dataCount > 1) {
+                    //     dateData.item.splice(itemIndex, 1);
+                    // } else {
+                    //     this.propsTodo.splice(dateIndex, 1);
+                    // }
 
-                    // 切完之後畫面的刪除按鈕隱藏
-                    this.showDelBtn(date)
+                    // // 切完之後畫面的刪除按鈕隱藏
+                    // this.showDelBtn(date)
                     
-                    // 將 localStorage 陣列裝回
-                    localStorage.setItem('todoItem', JSON.stringify(this.propsTodo));
+                    // // 將 localStorage 陣列裝回
+                    // localStorage.setItem('todoItem', JSON.stringify(this.propsTodo));
+
+                    this.api_deleteItem(dateID, itemID)
+                        .then(() => {
+                            this.$emit('updatePropsTodo');
+                        });
                 }
             },
             showDelBtn(dateVal) {
@@ -120,6 +126,9 @@
             async putApi_todoData(id, data) {
                 const url = "https://localhost:7268/api/TodoItems/" + id + "/TodoItemDetails/" + data.id;
                 await axios.put(url, data)
+            },
+            async api_deleteItem(dateID, itemID) {
+                await axios.delete("https://localhost:7268/api/TodoItems/"+ dateID + "/TodoItemDetails/" + itemID);
             }
         }
     }

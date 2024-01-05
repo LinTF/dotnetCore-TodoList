@@ -39,7 +39,8 @@
     </div>
     <div class="container-fluid">
       <div class="row">
-        <todo :propsTodo="todoItemSort" />
+        <!-- <todo :propsTodo="todoItemSort" /> -->
+        <todo :propsTodo="todoItemSort" @updatePropsTodo="getApi_todoData" />
       </div>
     </div>
   </template>
@@ -190,13 +191,14 @@
         }
       },
       computed: {
+        // 待辦：排序從後端做，連資料庫之後改
         todoItemSort() {
-          return this.todoItem.sort((a, b) => {
+            return this.todoItem.sort((a, b) => {
             const dateA = new Date(a.itemDate);
             const dateB = new Date(b.itemDate);
-  
+
             return dateB - dateA;
-          });
+            });
         }
       }
     }
