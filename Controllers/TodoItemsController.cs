@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol;
 using TodoList.Models;
 
 namespace TodoList.Controllers
@@ -50,33 +51,23 @@ namespace TodoList.Controllers
             return todoItem;
         }
 
-        // PUT: api/TodoItems/5
-        // 暫不使用
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItem(int id, TodoItem todoItem)
+        // PUT: api/TodoItems/Sort
+        [HttpPut("Sort")]
+        public async Task<IActionResult> PutTodoItemSort(List<TodoItemDetail> todoItemDetail)
         {
-            if (id != todoItem.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(todoItem).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TodoItemExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+        
+            for (int item = 0; item < todoItemDetail.Count; item ++) {
+                var inputDetailID = todoItemDetail[item].Id;
+                var sqlDetail = await _context.TodoItemDetail.FindAsync(inputDetailID);
+                if (sqlDetail != null) {
+                    sqlDetail.SortId = item + 1;
+                    sqlDetail.TodoItemId = todoItemDetail[item].TodoItemId;
+                    
+                    _context.Entry(sqlDetail).State = EntityState.Modified;
                 }
             }
+            
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }

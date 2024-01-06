@@ -194,10 +194,10 @@
         // 待辦：排序從後端做，連資料庫之後改
         todoItemSort() {
             return this.todoItem.sort((a, b) => {
-            const dateA = new Date(a.itemDate);
-            const dateB = new Date(b.itemDate);
+                const dateA = new Date(a.itemDate);
+                const dateB = new Date(b.itemDate);
 
-            return dateB - dateA;
+                return dateB - dateA;
             });
         }
       }

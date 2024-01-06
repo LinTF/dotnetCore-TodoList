@@ -1,5 +1,5 @@
 <template>
-    <div class="col-xl-4 col-md-6 date-black" v-for="(todo, dateIndex) in propsTodo" :key="dateIndex">
+    <div class="col-xl-4 col-md-6 date-black" :data-id="todo.id" v-for="(todo, dateIndex) in propsTodo" :key="dateIndex">
         <h3>{{ formatDate(todo.itemDate) }}
             <button class="del-icon" 
                 @click="showDelBtn(todo.itemDate)">
@@ -118,10 +118,38 @@
                 data.isFinish = !data.isFinish
                 this.putApi_todoData(id, data)
             },
-            onStart() {},
-            onEnd() {
-                // 將 localStorage 陣列裝回
-                localStorage.setItem('todoItem', JSON.stringify(this.propsTodo));
+            onStart() {
+            },
+            onEnd(e) {
+                const newTodoList = JSON.parse(JSON.stringify(this.propsTodo));
+                const fromTodoID = e.from.parentNode.parentNode.parentNode.dataset.id;
+                const toTodoID = e.to.parentNode.parentNode.parentNode.dataset.id;
+                const fromData = newTodoList.find(todo => todo.id === Number(fromTodoID));
+                const toData = newTodoList.find(todo => todo.id === Number(toTodoID));
+                const onlyFromDetailData = fromData.todoItemDetail;
+                const onlyToDetailData = toData.todoItemDetail;
+
+                let putTodoItemData = [];
+
+                if (fromTodoID !== toTodoID) {
+                    for (let i = 0; i < onlyFromDetailData.length; i++) {
+                        let getTodoItemIdCol = onlyFromDetailData[i].todoItemId
+                        getTodoItemIdCol = fromTodoID;
+                        putTodoItemData.push({ id: onlyFromDetailData[i].id, todoItemId: getTodoItemIdCol })
+                    }
+                }
+                
+                for (let i = 0; i < onlyToDetailData.length; i++) {
+                    let getTodoItemIdCol = onlyToDetailData[i].todoItemId
+                    getTodoItemIdCol = toTodoID;
+                    putTodoItemData.push({ id: onlyToDetailData[i].id, todoItemId: getTodoItemIdCol })
+                }
+
+                // api
+                this.api_PutTodoItemSort(putTodoItemData)
+                    .then(() => {
+                        this.$emit('updatePropsTodo');
+                    });
             },
             async putApi_todoData(id, data) {
                 const url = "https://localhost:7268/api/TodoItems/" + id + "/TodoItemDetails/" + data.id;
@@ -129,6 +157,10 @@
             },
             async api_deleteItem(dateID, itemID) {
                 await axios.delete("https://localhost:7268/api/TodoItems/"+ dateID + "/TodoItemDetails/" + itemID);
+            },
+            async api_PutTodoItemSort(detailData) {
+                const url = "https://localhost:7268/api/TodoItems/Sort"
+                await axios.put(url, detailData);
             }
         }
     }
