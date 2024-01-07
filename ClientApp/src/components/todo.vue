@@ -122,8 +122,8 @@
             },
             onEnd(e) {
                 const newTodoList = JSON.parse(JSON.stringify(this.propsTodo));
-                const fromTodoID = e.from.parentNode.parentNode.parentNode.dataset.id;
-                const toTodoID = e.to.parentNode.parentNode.parentNode.dataset.id;
+                const fromTodoID = e.from.closest('[data-id]').dataset.id;
+                const toTodoID = e.to.closest('[data-id]').dataset.id;
                 const fromData = newTodoList.find(todo => todo.id === Number(fromTodoID));
                 const toData = newTodoList.find(todo => todo.id === Number(toTodoID));
                 const onlyFromDetailData = fromData.todoItemDetail;
