@@ -112,6 +112,14 @@ namespace TodoList.Controllers
             return CreatedAtAction("GetTodoItem", new { id = todoItem.Id }, todoItem);
         }
 
+        // POST: api/TodoItems/5/TodoItemDetails
+        [HttpPost]
+        public async Task<ActionResult<TodoItem>> PostItemDetails(TodoItem todoItem) {
+            var maxTodoID = await GetMaxTodoID();
+
+            return NoContent();
+        }
+
         // DELETE: api/TodoItems/empty
         [HttpDelete("empty")]
         public async Task<IActionResult> DeleteTodoItemAll()
@@ -170,5 +178,18 @@ namespace TodoList.Controllers
         {
             return (_context.TodoItems?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        private async Task<int> GetMaxTodoID() {
+            var todoList = await _context.TodoItems.OrderByDescending(item => item.Id).FirstOrDefaultAsync();
+            if (todoList == null) {
+                return 1;
+            } else {
+                return todoList.Id + 1;
+            }
+        }
+
+        // private int GetMaxDetailID(int todoId) {
+
+        // }
     }
 }
