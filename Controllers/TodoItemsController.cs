@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol;
+using NuGet.Versioning;
 using TodoList.Models;
 
 namespace TodoList.Controllers
@@ -98,25 +100,65 @@ namespace TodoList.Controllers
         }
 
         // POST: api/TodoItems
+        // 暫不使用
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
-        {
-          if (_context.TodoItems == null)
-          {
-              return Problem("Entity set 'TodoContext.TodoItems'  is null.");
-          }
-            _context.TodoItems.Add(todoItem);
-            await _context.SaveChangesAsync();
+        // [HttpPost]
+        // public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
+        // {
+        //   if (_context.TodoItems == null)
+        //   {
+        //       return Problem("Entity set 'TodoContext.TodoItems'  is null.");
+        //   }
+        //     _context.TodoItems.Add(todoItem);
+        //     await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTodoItem", new { id = todoItem.Id }, todoItem);
-        }
+        //     return CreatedAtAction("GetTodoItem", new { id = todoItem.Id }, todoItem);
+        // }
 
-        // POST: api/TodoItems/5/TodoItemDetails
+        // POST: api/TodoItems
         [HttpPost]
-        public async Task<ActionResult<TodoItem>> PostItemDetails(TodoItem todoItem) {
+        public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem) {
+            // 撰寫中
+            var getItemDate = todoItem.ItemDate;
+            var getItemText = todoItem.TodoItemDetail[0].ItemText;
             var maxTodoID = await GetMaxTodoID();
+            var maxItemID = await GetMaxItemID();
 
+            // step 1: 找出欲新增的日期是否已存在
+            var todoItems = await _context.TodoItems.Where(item => item.ItemDate == getItemDate).FirstOrDefaultAsync();
+
+            // step 2: 如果不存在，新增日期 & 待辦事項
+            if (todoItems == null) {
+                var newTodoList = new TodoItem
+                {
+                    Id = maxTodoID, 
+                    ItemDate = getItemDate
+                };
+
+                var newItemlist = new TodoItemDetail
+                {
+                    Id = maxItemID, 
+                    ItemText = getItemText, 
+                    SortId = maxItemID, 
+                    TodoItemId = maxTodoID
+                };
+                newTodoList.TodoItemDetail.Add(newItemlist);
+
+                _context.TodoItems.Add(newTodoList);
+            } else {
+                // step 3: 如果存在，就只新增待辦事項
+                var newItemlist = new TodoItemDetail
+                {
+                    Id = maxItemID, 
+                    ItemText = getItemText, 
+                    SortId = maxItemID, 
+                    TodoItemId = todoItems.Id
+                };
+
+                _context.TodoItemDetail.Add(newItemlist);
+            }
+
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
@@ -188,8 +230,13 @@ namespace TodoList.Controllers
             }
         }
 
-        // private int GetMaxDetailID(int todoId) {
-
-        // }
+        private async Task<int> GetMaxItemID() {
+            var todoItemDetail = await _context.TodoItemDetail.OrderByDescending(item => item.Id).FirstOrDefaultAsync();
+            if (todoItemDetail == null) {
+                return 1;
+            } else {
+                return todoItemDetail.Id + 1;
+            }
+        }
     }
 }

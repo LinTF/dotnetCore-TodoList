@@ -96,23 +96,36 @@
   
           // 判斷是否為日期
           const isValidDate = this.isValidDate(date);
+
+          if (todoItemText === '') {
+            alert("請輸入待辦事項");
+          }
   
           if (isValidDate && todoItemText !== '') {
-            const formatSelDate = this.formatDate(date);
-            // 找有沒有已存在的日期
-            const hasDateData = this.todoItem.find(item => item.date === formatSelDate);
+            // const formatSelDate = this.formatDate(date);
+            // // 找有沒有已存在的日期
+            // const hasDateData = this.todoItem.find(item => item.date === formatSelDate);
   
-            // 如果已存在，就新增該日期的資料，不存在就新增包含日期的資料
-            if (hasDateData) {
-              const newData = { text: todoItemText, isFinish: false }
-              hasDateData.item.splice(0, 0, newData)
-            } else {
-              const newTodoItem = { date: formatSelDate, isEdit: false, item: [{ text: todoItemText, isFinish: false }] };
-              this.todoItem.push(newTodoItem);
-            }
+            // // 如果已存在，就新增該日期的資料，不存在就新增包含日期的資料
+            // if (hasDateData) {
+            //   const newData = { text: todoItemText, isFinish: false }
+            //   hasDateData.item.splice(0, 0, newData)
+            // } else {
+            //   const newTodoItem = { date: formatSelDate, isEdit: false, item: [{ text: todoItemText, isFinish: false }] };
+            //   this.todoItem.push(newTodoItem);
+            // }
   
-            // 將更新後的 todoItem 陣列存入 localStorage
-            localStorage.setItem("todoItem", JSON.stringify(this.todoItem));
+            // // 將更新後的 todoItem 陣列存入 localStorage
+            // localStorage.setItem("todoItem", JSON.stringify(this.todoItem));
+
+            let todoItemDetail = [];
+            todoItemDetail.push({ itemText: todoItemText });
+
+            let todoItemData = { itemDate: date, todoItemDetail: todoItemDetail };
+            this.api_postData(todoItemData)
+                .then(() => {
+                  this.getApi_todoData();
+                });
   
             // 清空輸入框
             this.todoItemText = '';
@@ -188,6 +201,10 @@
           // emptyApi.data;
 
           await axios.delete("https://localhost:7268/api/TodoItems/empty");
+        },
+        async api_postData(todoItemData) {
+            const url = "https://localhost:7268/api/TodoItems"
+            await axios.post(url, todoItemData);
         }
       },
       computed: {
