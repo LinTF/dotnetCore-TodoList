@@ -5,8 +5,9 @@ import "bootstrap"
 import '@fortawesome/fontawesome-free/js/all.js';
 import "../src/assets/scss/style.scss"
 import axios from "./axios/axios.js"
+import store from './store'
 
-const app = createApp(App);
+const app = createApp(App).use(store);
 
 app.mount('#app');
 
