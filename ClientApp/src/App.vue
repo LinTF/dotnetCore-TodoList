@@ -34,13 +34,15 @@
       </div>
       <div>
         <button type="submit" class="btn btn-primary mb-3" @click="apiTest">API</button>
+        <button type="submit" class="btn btn-primary mb-3" @click="testMutations">mutations</button>
+        <p>{{ getTestText }}</p>
       </div>
       <hr />
     </div>
     <div class="container-fluid">
       <div class="row">
         <!-- <todo :propsTodo="todoItemSort" /> -->
-        <todo :propsTodo="todoItemSort" @updatePropsTodo="getApi_todoData" />
+        <todo :propsTodo="this.todoItem" @updatePropsTodo="getApi_todoData" />
       </div>
     </div>
   </template>
@@ -48,6 +50,7 @@
   <script>
     import todo from "@/components/todo.vue"
     import axios from 'axios'
+    // import { Action } from "vuex"
   
     export default {
       name: 'todoList',
@@ -205,6 +208,11 @@
         async api_postData(todoItemData) {
             const url = "https://localhost:7268/api/TodoItems"
             await axios.post(url, todoItemData);
+        },
+        async testMutations() {
+          // this.$store.commit('setTestText', 'is test Mutations');
+          // console.log(this.$store.state.isOk);
+          console.log(await this.$store.dispatch('testGetApi'));
         }
       },
       computed: {
@@ -216,6 +224,9 @@
 
                 return dateB - dateA;
             });
+        },
+        getTestText() {
+          return "";
         }
       }
     }

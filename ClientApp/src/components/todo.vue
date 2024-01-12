@@ -77,7 +77,7 @@
             draggable
         },
         methods: {
-            deleteTodoItem(dateID, itemID, date, itemText) {
+            async deleteTodoItem(dateID, itemID, date, itemText) {
                 const checkDelete = confirm("您確定要刪除 " + formatDate(date) + '：' + itemText + " 嗎？");
                 if (checkDelete) {
                     // // 先找到要刪除的日期
@@ -98,10 +98,13 @@
                     // // 將 localStorage 陣列裝回
                     // localStorage.setItem('todoItem', JSON.stringify(this.propsTodo));
 
-                    this.api_deleteItem(dateID, itemID)
-                        .then(() => {
-                            this.$emit('updatePropsTodo');
-                        });
+                    // this.api_deleteItem(dateID, itemID)
+                    //     .then(() => {
+                    //         this.$emit('updatePropsTodo');
+                    //     });
+
+                    await this.api_deleteItem(dateID, itemID);
+                    this.$emit('updatePropsTodo');
                 }
             },
             showDelBtn(dateVal) {
@@ -138,7 +141,7 @@
                         putTodoItemData.push({ id: onlyFromDetailData[i].id, todoItemId: getTodoItemIdCol })
                     }
                 }
-                
+                console.log(onlyToDetailData)
                 for (let i = 0; i < onlyToDetailData.length; i++) {
                     let getTodoItemIdCol = onlyToDetailData[i].todoItemId
                     getTodoItemIdCol = toTodoID;

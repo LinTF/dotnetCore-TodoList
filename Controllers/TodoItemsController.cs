@@ -31,7 +31,7 @@ namespace TodoList.Controllers
           {
               return NotFound();
           }
-            return await _context.TodoItems.Include(todoItem => todoItem.TodoItemDetail).ToListAsync();
+            return await _context.TodoItems.OrderByDescending(group => group.ItemDate).Include(todoItem => todoItem.TodoItemDetail.OrderByDescending(item => item.SortId)).ToListAsync();
         }
 
         // GET: api/TodoItems/5
