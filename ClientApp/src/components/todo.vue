@@ -19,8 +19,7 @@
                     @end="onEnd">
 
                     <template #item="{ element, index }">
-                        <div 
-                            class="row item"
+                        <div class="row item"
                             :style="{ 'background-color': element.isFinish === false ? '#f8e4cc' : '#fff' }">
         
                             <div class="col-7 vertical-center">
@@ -141,7 +140,7 @@
                         putTodoItemData.push({ id: onlyFromDetailData[i].id, todoItemId: getTodoItemIdCol })
                     }
                 }
-                console.log(onlyToDetailData)
+
                 for (let i = 0; i < onlyToDetailData.length; i++) {
                     let getTodoItemIdCol = onlyToDetailData[i].todoItemId
                     getTodoItemIdCol = toTodoID;
