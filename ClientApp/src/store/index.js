@@ -3,25 +3,30 @@ import { http } from '@/utils/http'
 
 export default createStore({
     state: {
-        isOK: false
+        todoData: []
     },
     getters: {
     },
     mutations: {
-        setTestText(state, payload) {
-        // state.testText = payload;
+        setTodoData(state, payload) {
+            for (let todoGroupb of payload) {
+                todoGroupb.isEdit = false;
+            }
+            state.todoData = payload;
         }
     },
     actions: {
-        async testGetApi() {
-            // const test = http;
-            // state.isOK = true;
-            // if (test !== null) {
-            //     state.isOK = true;
-            // }
-
+        async Api_GetTodoData(context, payload) {
             const { data } = await http.get("/");
-            return data;
+            context.commit('setTodoData', data);
+        },
+        async Api_postData(context, payload) {
+            const { data } = await http.post("/", payload);
+            context.commit('setTodoData', data);
+        },
+        async Api_EmptyTodoData(context, payload) {
+            const { data } = await http.delete("/empty");
+            context.commit('setTodoData', data);
         }
     },
     modules: {

@@ -1,11 +1,12 @@
 <template>
-    <div class="col-xl-4 col-md-6 date-black" :data-id="todo.id" v-for="(todo, dateIndex) in propsTodo" :key="dateIndex">
+    <div class="col-xl-4 col-md-6 date-black" :data-id="todo.id" v-for="(todo, dateIndex) in get_todoData" :key="dateIndex">
         <h3>{{ formatDate(todo.itemDate) }}
             <button class="del-icon" 
                 @click="showDelBtn(todo.itemDate)">
                 <i class="fa-regular fa-trash-can"></i>
             </button>
         </h3>
+        <!-- <p>{{ todo.isEdit }}</p> -->
         <div class="todo-block">
             <div>
                 <draggable 
@@ -163,6 +164,11 @@
             async api_PutTodoItemSort(detailData) {
                 const url = "https://localhost:7268/api/TodoItems/Sort"
                 await axios.put(url, detailData);
+            }
+        },
+        computed: {
+            get_todoData() {
+                return this.$store.state.todoData;
             }
         }
     }

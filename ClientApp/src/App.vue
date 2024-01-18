@@ -64,14 +64,14 @@
       components: {
         todo
       },
-      created() {
+      async created() {
         // // 當元件被建立時讀取 localstorage 資料
         // const todoListData = localStorage.getItem("todoItem");
         // if (todoListData) {
         //   this.todoItem = JSON.parse(todoListData);
         // }
 
-        this.getApi_todoData();
+        await this.getApi_todoData();
   
         // 日期元件
         const today = new Date();
@@ -83,7 +83,7 @@
         this.formatDelBtn();
       },
       methods: {
-        addTodoItem() {
+        async addTodoItem() {
           // *** todoItem 陣列結構 [
           //   {
           //     date: '2023/05/19',
@@ -125,10 +125,12 @@
             todoItemDetail.push({ itemText: todoItemText });
 
             let todoItemData = { itemDate: date, todoItemDetail: todoItemDetail };
-            this.api_postData(todoItemData)
-                .then(() => {
-                  this.getApi_todoData();
-                });
+            // this.api_postData(todoItemData)
+            //     .then(() => {
+            //       this.getApi_todoData();
+            //     });
+            await this.$store.dispatch('Api_postData', todoItemData);
+            // await this.getApi_todoData();
   
             // 清空輸入框
             this.todoItemText = '';
@@ -172,17 +174,21 @@
             }
           }
         },
-        clearTodoList() {
+        async clearTodoList() {
           const result = confirm("您確定要清空全部待辦事項嗎？")
           if (result) {
             // this.todoItem = [];
             // localStorage.clear();
+
+
             
-            this.api_emptyData()
-              .then(() => {
-                // 再次取得資料
-                this.getApi_todoData();
-              });
+            // this.api_emptyData()
+            //   .then(() => {
+            //     // 再次取得資料
+            //     this.getApi_todoData();
+            //   });
+
+              await this.$store.dispatch('Api_EmptyTodoData');
           }
         },
         async apiTest() {
@@ -192,12 +198,22 @@
           console.log(aaa.data);
         },
         async getApi_todoData() {
-          const todoListData = await axios.get("https://localhost:7268/api/TodoItems");
-          this.todoItem = todoListData.data;
+          // const todoListData = await axios.get("https://localhost:7268/api/TodoItems");
+          // this.todoItem = todoListData.data;
 
-          for (const todo of this.todoItem ) {
-            todo.isEdit = false;
-          }
+          // this.todoItem = await this.$store.dispatch('Api_GetTodoData');
+          await this.$store.dispatch('Api_GetTodoData');
+
+          // console.log(JSON.stringify(this.$store.state.todoData));
+          // console.log(this.todoItem);
+
+          // for (const todo of this.todoItem ) {
+          //   todo.isEdit = false;
+          // }
+
+          // for (const todo of this.$store.state.todoData ) {
+          //   todo.isEdit = false;
+          // }
         },
         async api_emptyData() {
           // const emptyApi = await axios.delete("https://localhost:7268/api/TodoItems/empty");

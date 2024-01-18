@@ -117,7 +117,7 @@ namespace TodoList.Controllers
 
         // POST: api/TodoItems
         [HttpPost]
-        public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem) {
+        public async Task<ActionResult<IEnumerable<TodoItem>>> PostTodoItem(TodoItem todoItem) {
             // 撰寫中
             var getItemDate = todoItem.ItemDate;
             var getItemText = todoItem.TodoItemDetail[0].ItemText;
@@ -159,12 +159,13 @@ namespace TodoList.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return NoContent();
+            // return NoContent();
+            return await _context.TodoItems.OrderByDescending(group => group.ItemDate).Include(todoItem => todoItem.TodoItemDetail.OrderByDescending(item => item.SortId)).ToListAsync();
         }
 
         // DELETE: api/TodoItems/empty
         [HttpDelete("empty")]
-        public async Task<IActionResult> DeleteTodoItemAll()
+        public async Task<ActionResult<IEnumerable<TodoItem>>> DeleteTodoItemAll()
         {
             if (_context.TodoItems == null)
             {
@@ -179,7 +180,8 @@ namespace TodoList.Controllers
             _context.TodoItemDetail.RemoveRange(_context.TodoItemDetail);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            // return NoContent();
+            return await ReturnTodoData();
         }
 
         // DELETE: api/TodoItems/5/TodoItemDetails/6
@@ -237,6 +239,10 @@ namespace TodoList.Controllers
             } else {
                 return todoItemDetail.Id + 1;
             }
+        }
+
+        private async Task<ActionResult<IEnumerable<TodoItem>>> ReturnTodoData() {
+            return await _context.TodoItems.OrderByDescending(group => group.ItemDate).Include(todoItem => todoItem.TodoItemDetail.OrderByDescending(item => item.SortId)).ToListAsync();
         }
     }
 }
