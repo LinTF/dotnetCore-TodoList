@@ -129,7 +129,7 @@
             //     .then(() => {
             //       this.getApi_todoData();
             //     });
-            await this.$store.dispatch('Api_postData', todoItemData);
+            await this.$store.dispatch('Api_PostTodoData', todoItemData);
             // await this.getApi_todoData();
   
             // 清空輸入框

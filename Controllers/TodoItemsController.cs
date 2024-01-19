@@ -55,7 +55,7 @@ namespace TodoList.Controllers
 
         // PUT: api/TodoItems/Sort
         [HttpPut("Sort")]
-        public async Task<IActionResult> PutTodoItemSort(List<TodoItemDetail> todoItemDetail)
+        public async Task<ActionResult<IEnumerable<TodoItem>>> PutTodoItemSort(List<TodoItemDetail> todoItemDetail)
         {
         
             for (int item = 0; item < todoItemDetail.Count; item ++) {
@@ -71,20 +71,21 @@ namespace TodoList.Controllers
             
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            // return NoContent();
+            return await ReturnTodoData();
         }
 
         // PUT: api/TodoItems/5/TodoItemDetails/2
         [HttpPut("{id}/TodoItemDetails/{itemDetailsId}")]
-        public async Task<IActionResult> PutTodoItemDetail(int id, int itemDetailsId, TodoItemDetail todoItemDetail)
+        public async Task<ActionResult<IEnumerable<TodoItem>>> PutTodoItemDetail(TodoItemDetail todoItemDetail)
         {
-            var todoItem = await _context.TodoItems.FindAsync(id);
+            var todoItem = await _context.TodoItems.FindAsync(todoItemDetail.TodoItemId);
             if (todoItem == null)
             {
                 return BadRequest();
             }
 
-            var itemDetail = await _context.TodoItemDetail.FindAsync(itemDetailsId);
+            var itemDetail = await _context.TodoItemDetail.FindAsync(todoItemDetail.Id);
             if (itemDetail == null)
             {
                 return BadRequest();
@@ -96,7 +97,9 @@ namespace TodoList.Controllers
 
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            // return NoContent();
+            // return await ReturnTodoData();
+            return await _context.TodoItems.Include(todoItem => todoItem.TodoItemDetail).ToListAsync();
         }
 
         // POST: api/TodoItems
@@ -186,7 +189,7 @@ namespace TodoList.Controllers
 
         // DELETE: api/TodoItems/5/TodoItemDetails/6
         [HttpDelete("{id}/TodoItemDetails/{itemDetailsId}")]
-        public async Task<IActionResult> DeleteTodoItemDetail(int id, int itemDetailsId)
+        public async Task<ActionResult<IEnumerable<TodoItem>>> DeleteTodoItemDetail(int id, int itemDetailsId)
         {
             if (_context.TodoItems == null)
             {
@@ -215,7 +218,8 @@ namespace TodoList.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return NoContent();
+            // return NoContent();
+            return await ReturnTodoData();
         }
 
         private bool TodoItemExists(int id)

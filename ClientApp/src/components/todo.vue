@@ -103,12 +103,23 @@
                     //         this.$emit('updatePropsTodo');
                     //     });
 
-                    await this.api_deleteItem(dateID, itemID);
-                    this.$emit('updatePropsTodo');
+                    // await this.api_deleteItem(dateID, itemID);
+                    // this.$emit('updatePropsTodo');
+                    
+                    await this.$store.dispatch('Api_DeleteTodoItem', { dateID, itemID });
                 }
             },
             showDelBtn(dateVal) {
-                for (const todo of this.propsTodo) {
+                // for (const todo of this.propsTodo) {
+                //     if (todo.itemDate === dateVal) {
+                //         todo.isEdit = !todo.isEdit;
+                //     } else {
+                //         todo.isEdit = false;
+                //     }
+                // }
+
+
+                for (const todo of this.get_todoData) {
                     if (todo.itemDate === dateVal) {
                         todo.isEdit = !todo.isEdit;
                     } else {
@@ -124,7 +135,8 @@
             onStart() {
             },
             onEnd(e) {
-                const newTodoList = JSON.parse(JSON.stringify(this.propsTodo));
+                // const newTodoList = JSON.parse(JSON.stringify(this.propsTodo));
+                const newTodoList = JSON.parse(JSON.stringify(this.get_todoData));
                 const fromTodoID = e.from.closest('[data-id]').dataset.id;
                 const toTodoID = e.to.closest('[data-id]').dataset.id;
                 const fromData = newTodoList.find(todo => todo.id === Number(fromTodoID));
@@ -149,21 +161,27 @@
                 }
 
                 // api
+                // this.api_PutTodoItemSort(putTodoItemData)
+                //     .then(() => {
+                //         this.$emit('updatePropsTodo');
+                //     });
+
                 this.api_PutTodoItemSort(putTodoItemData)
-                    .then(() => {
-                        this.$emit('updatePropsTodo');
-                    });
             },
             async putApi_todoData(id, data) {
-                const url = "https://localhost:7268/api/TodoItems/" + id + "/TodoItemDetails/" + data.id;
-                await axios.put(url, data)
+                // const url = "https://localhost:7268/api/TodoItems/" + id + "/TodoItemDetails/" + data.id;
+                // await axios.put(url, data)
+
+                await this.$store.dispatch('Api_PutTodoData', data);
             },
             async api_deleteItem(dateID, itemID) {
                 await axios.delete("https://localhost:7268/api/TodoItems/"+ dateID + "/TodoItemDetails/" + itemID);
             },
             async api_PutTodoItemSort(detailData) {
-                const url = "https://localhost:7268/api/TodoItems/Sort"
-                await axios.put(url, detailData);
+                // const url = "https://localhost:7268/api/TodoItems/Sort"
+                // await axios.put(url, detailData);
+
+                await this.$store.dispatch('Api_SortTodoItem', detailData);
             }
         },
         computed: {
