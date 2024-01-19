@@ -32,11 +32,10 @@
           </div>
         </div>
       </div>
-      <div>
+      <!-- <div>
         <button type="submit" class="btn btn-primary mb-3" @click="apiTest">API</button>
-        <button type="submit" class="btn btn-primary mb-3" @click="testMutations">mutations</button>
         <p>{{ getTestText }}</p>
-      </div>
+      </div> -->
       <hr />
     </div>
     <div class="container-fluid">
