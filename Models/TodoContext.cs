@@ -13,7 +13,7 @@ namespace TodoList.Models
         {
         }
 
-        public DbSet<TodoItem> TodoItems { get; set; } = null!;
-        public DbSet<TodoItemDetail> TodoItemDetail { get; set; } = null!;
+        public DbSet<TodoDateGroup> TodoDateGroup { get; set; } = null!;
+        public DbSet<TodoItems> TodoItems { get; set; } = null!;
     }
 }

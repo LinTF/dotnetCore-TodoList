@@ -9,7 +9,7 @@ namespace TodoList.Models
     /// <summary>
     /// 某日期中的待辦事項
     /// </summary>
-    public class TodoItemDetail
+    public class TodoItems
     {
         public int Id { get; set; }
         /// <summary>
@@ -29,8 +29,8 @@ namespace TodoList.Models
         public int SortId { get; set; }
 
 
-        public int? TodoItemId { get; set; }
+        public int? GroupId { get; set; }
         [JsonIgnore]
-        public TodoItem? TodoItem { get; set; }
+        public TodoDateGroup? TodoDateGroup { get; set; }
     }
 }

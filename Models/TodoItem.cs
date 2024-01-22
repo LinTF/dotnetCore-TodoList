@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TodoList.Models
 {
-    public class TodoItem
+    public class TodoDateGroup
     {
         /// <summary>
         /// 流水號
@@ -24,6 +24,6 @@ namespace TodoList.Models
         /// 待辦清單
         /// </summary>
         /// <value></value>
-        public List<TodoItemDetail> TodoItemDetail { get; set; } = new List<TodoItemDetail>();
+        public List<TodoItems> TodoItems { get; set; } = new List<TodoItems>();
     }
 }
