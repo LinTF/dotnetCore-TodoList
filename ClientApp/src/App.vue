@@ -94,11 +94,12 @@
                 // ]
 
                 const todoItemText = this.todoItemText.trim();
-                const date = this.selectedDate;
+                const todoDate = this.selectedDate;
 
                 // 判斷是否為日期
-                const isValidDate = this.isValidDate(date);
+                const isValidDate = this.isValidDate(todoDate);
 
+                // 判斷是否有輸入待辦事項文字
                 if (todoItemText === '') {
                     alert("請輸入待辦事項");
                 }
@@ -107,16 +108,15 @@
                     let todoItem = [];
                     todoItem.push({ itemText: todoItemText });
 
-                    let todoItemGroup = { itemDate: date, TodoItems: todoItem };
-                    // await this.$store.dispatch('Api_PostTodoData', todoItemGroup);
+                    let todoItemGroup = { itemDate: todoDate, TodoItems: todoItem };
                     await this.api_postData(todoItemGroup);
-
-                    // 清空輸入框
-                    this.todoItemText = '';
-
-                    // 還原預設隱藏刪除按鈕
-                    this.formatDelBtn();
                 }
+
+                // 清空輸入框
+                this.todoItemText = '';
+
+                // 還原預設隱藏刪除按鈕
+                this.formatDelBtn();
             },
             formatDate(dateStr) {
                 const [year, month, day] = dateStr.split('-');
@@ -201,9 +201,6 @@
                 await axios.delete("https://localhost:7268/api/TodoItems/empty");
             },
             async api_postData(todoItemData) {
-                // const url = "https://localhost:7268/api/TodoItems"
-                // await axios.post(url, todoItemData);
-
                 await this.$store.dispatch('Api_PostTodoData', todoItemData);
             },
             async testMutations() {

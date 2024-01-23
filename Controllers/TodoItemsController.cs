@@ -27,9 +27,9 @@ namespace TodoList.Controllers
         // GET: api/TodoItems
         // [HttpGet]
         [HttpGet("TodoItems")]
-        public async Task<ActionResult<IEnumerable<TodoDateGroup>>> GetTodoItems()
+        public async Task<ActionResult<IEnumerable<TodoGroup>>> GetTodoItems()
         {
-          if (_context.TodoDateGroup == null)
+          if (_context.TodoGroup == null)
           {
               return NotFound();
           }
@@ -39,15 +39,15 @@ namespace TodoList.Controllers
         // PUT: api/TodoItems/Sort
         // [HttpPut("Sort")]
         [HttpPut("TodoItems/Sort")]
-        public async Task<ActionResult<IEnumerable<TodoDateGroup>>> PutTodoItemSort(List<TodoItems> todoItems)
+        public async Task<ActionResult<IEnumerable<TodoGroup>>> PutTodoItemSort(List<TodoItem> todoItems)
         {
         
             for (int item = 0; item < todoItems.Count; item ++) {
                 var itemID = todoItems[item].Id;
-                var sqlTodoItem = await _context.TodoItems.FindAsync(itemID);
+                var sqlTodoItem = await _context.TodoItem.FindAsync(itemID);
                 if (sqlTodoItem != null) {
                     sqlTodoItem.SortId = item + 1;
-                    sqlTodoItem.GroupId = todoItems[item].GroupId;
+                    sqlTodoItem.TodoGroupId = todoItems[item].TodoGroupId;
                     
                     _context.Entry(sqlTodoItem).State = EntityState.Modified;
                 }
@@ -61,15 +61,15 @@ namespace TodoList.Controllers
         // [HttpPut("{id}/todoItems/{itemDetailsId}")]
         // PUT: api/TodoDateGroup/5/todoItem/2
         [HttpPut("TodoDateGroup/{groupID}/todoItem/{itemID}")]
-        public async Task<ActionResult<IEnumerable<TodoDateGroup>>> PutTodoItemDetail(TodoItems todoItems)
+        public async Task<ActionResult<IEnumerable<TodoGroup>>> PutTodoItemDetail(TodoItem todoItems)
         {
-            var todoGroup = await _context.TodoDateGroup.FindAsync(todoItems.GroupId);
+            var todoGroup = await _context.TodoGroup.FindAsync(todoItems.TodoGroupId);
             if (todoGroup == null)
             {
                 return BadRequest();
             }
 
-            var todoItem = await _context.TodoItems.FindAsync(todoItems.Id);
+            var todoItem = await _context.TodoItem.FindAsync(todoItems.Id);
             if (todoItem == null)
             {
                 return BadRequest();
@@ -88,44 +88,44 @@ namespace TodoList.Controllers
         // POST: api/TodoItems
         // [HttpPost]
         [HttpPost("TodoItems")]
-        public async Task<ActionResult<IEnumerable<TodoDateGroup>>> PostTodoItem(TodoDateGroup todoDateGroup) {
-            var getItemDate = todoDateGroup.ItemDate;
-            var getItemText = todoDateGroup.TodoItems[0].ItemText;
+        public async Task<ActionResult<IEnumerable<TodoGroup>>> PostTodoItem(TodoGroup todoGroup) {
+            var getItemDate = todoGroup.ItemDate;
+            var getItemText = todoGroup.TodoItems[0].ItemText;
             var maxItemID = await GetMaxItemID();
 
             // step 1: 找出欲新增的日期是否已存在
-            var todoGroup = await _context.TodoDateGroup.Where(item => item.ItemDate == getItemDate).FirstOrDefaultAsync();
+            var getGroup = await _context.TodoGroup.Where(item => item.ItemDate == getItemDate).FirstOrDefaultAsync();
 
             // step 2: 如果不存在，新增日期 & 待辦事項
-            if (todoGroup == null) {
+            if (getGroup == null) {
                 var maxGroupID = await GetMaxGroupID();
-                var newTodoDateGroup = new TodoDateGroup
+                var newTodoGroup = new TodoGroup
                 {
                     Id = maxGroupID, 
                     ItemDate = getItemDate
                 };
 
-                var newItemlist = new TodoItems
+                var newTodoItem = new TodoItem
                 {
                     Id = maxItemID, 
                     ItemText = getItemText, 
                     SortId = maxItemID, 
-                    GroupId = maxGroupID
+                    TodoGroupId = maxGroupID
                 };
-                newTodoDateGroup.TodoItems.Add(newItemlist);
+                newTodoGroup.TodoItems.Add(newTodoItem);
 
-                _context.TodoDateGroup.Add(newTodoDateGroup);
+                _context.TodoGroup.Add(newTodoGroup);
             } else {
                 // step 3: 如果存在，就只新增待辦事項
-                var newTodoItem = new TodoItems
+                var newTodoItem = new TodoItem
                 {
                     Id = maxItemID, 
                     ItemText = getItemText, 
                     SortId = maxItemID, 
-                    GroupId = todoGroup.Id
+                    TodoGroupId = getGroup.Id
                 };
 
-                _context.TodoItems.Add(newTodoItem);
+                _context.TodoItem.Add(newTodoItem);
             }
 
             await _context.SaveChangesAsync();
@@ -135,19 +135,19 @@ namespace TodoList.Controllers
 
         // DELETE: api/TodoItems/empty
         [HttpDelete("TodoItems/empty")]
-        public async Task<ActionResult<IEnumerable<TodoDateGroup>>> EmptyTodoItems()
+        public async Task<ActionResult<IEnumerable<TodoGroup>>> EmptyTodoItems()
         {
-            if (_context.TodoDateGroup == null)
+            if (_context.TodoGroup == null)
             {
                 return NotFound();
             }
 
-            if (_context.TodoItems == null) {
+            if (_context.TodoItem == null) {
                 return NotFound();
             }
 
-            _context.TodoDateGroup.RemoveRange(_context.TodoDateGroup);
-            _context.TodoItems.RemoveRange(_context.TodoItems);
+            _context.TodoGroup.RemoveRange(_context.TodoGroup);
+            _context.TodoItem.RemoveRange(_context.TodoItem);
             await _context.SaveChangesAsync();
 
             return await ReturnTodoData(false);
@@ -155,32 +155,32 @@ namespace TodoList.Controllers
 
         // DELETE: api/TodoItems/5/TodoItemDetails/6
         [HttpDelete("TodoDateGroup/{groupID}/todoItem/{itemID}")]
-        public async Task<ActionResult<IEnumerable<TodoDateGroup>>> DeleteTodoItem(int groupID, int itemID)
+        public async Task<ActionResult<IEnumerable<TodoGroup>>> DeleteTodoItem(int groupID, int itemID)
         {
-            if (_context.TodoDateGroup == null)
+            if (_context.TodoGroup == null)
             {
                 return NotFound();
             }
             
-            var todoGroup = await _context.TodoDateGroup.FindAsync(groupID);
+            var todoGroup = await _context.TodoGroup.FindAsync(groupID);
             if (todoGroup == null)
             {
                 return NotFound();
             }
 
-            var todoItem = await _context.TodoItems.FindAsync(itemID);
+            var todoItem = await _context.TodoItem.FindAsync(itemID);
             if (todoItem == null)
             {
                 return NotFound();
             }
 
-            _context.TodoItems.Remove(todoItem);
+            _context.TodoItem.Remove(todoItem);
             await _context.SaveChangesAsync();
 
-            var todoItemCount = await _context.TodoDateGroup.Include(todo => todo.TodoItems).FirstOrDefaultAsync(todoItem => todoItem.Id == groupID);
+            var todoItemCount = await _context.TodoGroup.Include(todo => todo.TodoItems).FirstOrDefaultAsync(todoItem => todoItem.Id == groupID);
             if (todoItemCount?.TodoItems?.Count == 0)
             {
-                _context.TodoDateGroup.Remove(todoGroup);
+                _context.TodoGroup.Remove(todoGroup);
                 await _context.SaveChangesAsync();
             }
 
@@ -189,7 +189,7 @@ namespace TodoList.Controllers
         }
 
         private async Task<int> GetMaxGroupID() {
-            var todoList = await _context.TodoDateGroup.OrderByDescending(item => item.Id).FirstOrDefaultAsync();
+            var todoList = await _context.TodoGroup.OrderByDescending(item => item.Id).FirstOrDefaultAsync();
             if (todoList == null) {
                 return 1;
             } else {
@@ -198,7 +198,7 @@ namespace TodoList.Controllers
         }
 
         private async Task<int> GetMaxItemID() {
-            var todoItem = await _context.TodoItems.OrderByDescending(item => item.Id).FirstOrDefaultAsync();
+            var todoItem = await _context.TodoItem.OrderByDescending(item => item.Id).FirstOrDefaultAsync();
             if (todoItem == null) {
                 return 1;
             } else {
@@ -206,11 +206,11 @@ namespace TodoList.Controllers
             }
         }
 
-        private async Task<ActionResult<IEnumerable<TodoDateGroup>>> ReturnTodoData(bool isOrderby = true) {
+        private async Task<ActionResult<IEnumerable<TodoGroup>>> ReturnTodoData(bool isOrderby = true) {
             if (isOrderby == true) {
-                return await _context.TodoDateGroup.OrderByDescending(group => group.ItemDate).Include(todo => todo.TodoItems.OrderByDescending(item => item.SortId)).ToListAsync();
+                return await _context.TodoGroup.OrderByDescending(group => group.ItemDate).Include(todo => todo.TodoItems.OrderByDescending(item => item.SortId)).ToListAsync();
             } else {
-                return await _context.TodoDateGroup.Include(todo => todo.TodoItems).ToListAsync();
+                return await _context.TodoGroup.Include(todo => todo.TodoItems).ToListAsync();
             }
         }
     }
