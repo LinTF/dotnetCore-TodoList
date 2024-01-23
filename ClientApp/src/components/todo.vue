@@ -11,8 +11,8 @@
             <div>
                 <draggable 
                     group="group"
-                    :list="todo.todoItemDetail"
-                    :item-key="detail => detail.id"
+                    :list="todo.todoItems"
+                    :item-key="item => item.id"
                     :force-fallback="false"
                     chosen-class="chosen"
                     animation="300"
@@ -135,29 +135,28 @@
             onStart() {
             },
             onEnd(e) {
-                // const newTodoList = JSON.parse(JSON.stringify(this.propsTodo));
                 const newTodoList = JSON.parse(JSON.stringify(this.get_todoData));
                 const fromTodoID = e.from.closest('[data-id]').dataset.id;
                 const toTodoID = e.to.closest('[data-id]').dataset.id;
                 const fromData = newTodoList.find(todo => todo.id === Number(fromTodoID));
                 const toData = newTodoList.find(todo => todo.id === Number(toTodoID));
-                const onlyFromDetailData = fromData.todoItemDetail;
-                const onlyToDetailData = toData.todoItemDetail;
+                const onlyFromItemData = fromData.todoItems;
+                const onlyToItmeData = toData.todoItems;
 
                 let putTodoItemData = [];
 
                 if (fromTodoID !== toTodoID) {
-                    for (let i = 0; i < onlyFromDetailData.length; i++) {
-                        let getTodoItemIdCol = onlyFromDetailData[i].todoItemId
+                    for (let i = 0; i < onlyFromItemData.length; i++) {
+                        let getTodoItemIdCol = onlyFromItemData[i].todoItemId
                         getTodoItemIdCol = fromTodoID;
-                        putTodoItemData.push({ id: onlyFromDetailData[i].id, todoItemId: getTodoItemIdCol })
+                        putTodoItemData.push({ id: onlyFromItemData[i].id, todoItemId: getTodoItemIdCol })
                     }
                 }
 
-                for (let i = 0; i < onlyToDetailData.length; i++) {
-                    let getTodoItemIdCol = onlyToDetailData[i].todoItemId
+                for (let i = 0; i < onlyToItmeData.length; i++) {
+                    let getTodoItemIdCol = onlyToItmeData[i].todoItemId
                     getTodoItemIdCol = toTodoID;
-                    putTodoItemData.push({ id: onlyToDetailData[i].id, todoItemId: getTodoItemIdCol })
+                    putTodoItemData.push({ id: onlyToItmeData[i].id, todoItemId: getTodoItemIdCol })
                 }
 
                 // api

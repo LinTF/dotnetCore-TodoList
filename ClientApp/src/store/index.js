@@ -16,15 +16,15 @@ export default createStore({
         }
     },
     actions: {
-        async Api_GetTodoData(context, payload) {
-            const { data } = await http.get("/");
+        async Api_GetTodoData(context) {
+            const { data } = await http.get("/TodoItems");
             context.commit('setTodoData', data);
         },
         async Api_PostTodoData(context, payload) {
-            const { data } = await http.post("/", payload);
+            const { data } = await http.post("/TodoItems", payload);
             context.commit('setTodoData', data);
         },
-        async Api_EmptyTodoData(context, payload) {
+        async Api_EmptyTodoData(context) {
             const { data } = await http.delete("/empty");
             context.commit('setTodoData', data);
         },

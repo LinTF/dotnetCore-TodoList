@@ -91,7 +91,6 @@ namespace TodoList.Controllers
         public async Task<ActionResult<IEnumerable<TodoDateGroup>>> PostTodoItem(TodoDateGroup todoDateGroup) {
             var getItemDate = todoDateGroup.ItemDate;
             var getItemText = todoDateGroup.TodoItems[0].ItemText;
-            var maxGroupID = await GetMaxGroupID();
             var maxItemID = await GetMaxItemID();
 
             // step 1: 找出欲新增的日期是否已存在
@@ -99,6 +98,7 @@ namespace TodoList.Controllers
 
             // step 2: 如果不存在，新增日期 & 待辦事項
             if (todoGroup == null) {
+                var maxGroupID = await GetMaxGroupID();
                 var newTodoDateGroup = new TodoDateGroup
                 {
                     Id = maxGroupID, 
@@ -208,7 +208,7 @@ namespace TodoList.Controllers
 
         private async Task<ActionResult<IEnumerable<TodoDateGroup>>> ReturnTodoData(bool isOrderby = true) {
             if (isOrderby == true) {
-                return await _context.TodoDateGroup.OrderByDescending(group => group.ItemDate).Include(todoItem => todoItem.TodoItems.OrderByDescending(item => item.SortId)).ToListAsync();
+                return await _context.TodoDateGroup.OrderByDescending(group => group.ItemDate).Include(todo => todo.TodoItems.OrderByDescending(item => item.SortId)).ToListAsync();
             } else {
                 return await _context.TodoDateGroup.Include(todo => todo.TodoItems).ToListAsync();
             }
