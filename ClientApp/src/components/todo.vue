@@ -26,7 +26,7 @@
                             <div class="col-7 vertical-center">
                                 <input type="checkbox" :id="todo.itemDate+index"
                                         :name="todo.itemDate+index" 
-                                        @change="getCheckedItem(todo.id ,element)"
+                                        @change="getCheckedItem(element)"
                                         :checked="element.isFinish"
                                         :disabled="element.isFinish">
                                 <span>{{ index + 1 + ". &nbsp;" }}</span>
@@ -43,7 +43,7 @@
         
                                 <button type="submit" class="btn return mb-3" 
                                 :style="{ display: todo.isEdit === false && element.isFinish === true ? 'block' : 'none' }" 
-                                @click="getCheckedItem(todo.id ,element)">取消勾選</button>
+                                @click="getCheckedItem(element)">取消勾選</button>
                             </div>
                         </div>
                     </template>
@@ -110,15 +110,6 @@
                 }
             },
             showDelBtn(dateVal) {
-                // for (const todo of this.propsTodo) {
-                //     if (todo.itemDate === dateVal) {
-                //         todo.isEdit = !todo.isEdit;
-                //     } else {
-                //         todo.isEdit = false;
-                //     }
-                // }
-
-
                 for (const todo of this.get_todoData) {
                     if (todo.itemDate === dateVal) {
                         todo.isEdit = !todo.isEdit;
@@ -127,10 +118,10 @@
                     }
                 }
             },
-            getCheckedItem(id, data) {
+            getCheckedItem(itemData) {
                 // 將資料使用 api 回傳至後端
-                data.isFinish = !data.isFinish
-                this.putApi_todoData(id, data)
+                itemData.isFinish = !itemData.isFinish
+                this.putApi_todoData(itemData)
             },
             onStart() {
             },
@@ -167,11 +158,8 @@
 
                 this.api_PutTodoItemSort(putTodoItemData)
             },
-            async putApi_todoData(id, data) {
-                // const url = "https://localhost:7268/api/TodoItems/" + id + "/TodoItemDetails/" + data.id;
-                // await axios.put(url, data)
-
-                await this.$store.dispatch('Api_PutTodoData', data);
+            async putApi_todoData(itemData) {
+                await this.$store.dispatch('Api_PutTodoData', itemData);
             },
             async api_deleteItem(dateID, itemID) {
                 await axios.delete("https://localhost:7268/api/TodoItems/"+ dateID + "/TodoItemDetails/" + itemID);

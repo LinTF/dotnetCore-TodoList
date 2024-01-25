@@ -64,12 +64,6 @@
             todo
         },
         async created() {
-            // // 當元件被建立時讀取 localstorage 資料
-            // const todoListData = localStorage.getItem("todoItem");
-            // if (todoListData) {
-            //   this.todoItem = JSON.parse(todoListData);
-            // }
-
             await this.getApi_todoData();
     
             // 日期元件
@@ -110,6 +104,7 @@
 
                     let todoItemGroup = { itemDate: todoDate, TodoItems: todoItem };
                     await this.api_postData(todoItemGroup);
+                    await this.getApi_todoData();
                 }
 
                 // 清空輸入框
@@ -117,12 +112,6 @@
 
                 // 還原預設隱藏刪除按鈕
                 this.formatDelBtn();
-            },
-            formatDate(dateStr) {
-                const [year, month, day] = dateStr.split('-');
-    
-                // 格式化日期
-                return `${year}/${month}/${day}`;
             },
             isValidDate(dateString) {
                 // 將正確日期格式拆開
@@ -149,7 +138,7 @@
                 // 預設刪除按鈕隱藏
                 for (const item of this.todoItem) {
                     if (item.isEdit) {
-                    item.isEdit = false;
+                        item.isEdit = false;
                     }
                 }
             },
@@ -177,22 +166,7 @@
                 console.log(aaa.data);
             },
             async getApi_todoData() {
-                // const todoListData = await axios.get("https://localhost:7268/api/TodoItems");
-                // this.todoItem = todoListData.data;
-
-                // this.todoItem = await this.$store.dispatch('Api_GetTodoData');
                 await this.$store.dispatch('Api_GetTodoData');
-
-                // console.log(JSON.stringify(this.$store.state.todoData));
-                // console.log(this.todoItem);
-
-                // for (const todo of this.todoItem ) {
-                //   todo.isEdit = false;
-                // }
-
-                // for (const todo of this.$store.state.todoData ) {
-                //   todo.isEdit = false;
-                // }
             },
             async api_emptyData() {
                 // const emptyApi = await axios.delete("https://localhost:7268/api/TodoItems/empty");

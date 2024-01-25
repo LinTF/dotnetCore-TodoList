@@ -61,7 +61,7 @@ namespace TodoList.Controllers
         // [HttpPut("{id}/todoItems/{itemDetailsId}")]
         // PUT: api/TodoDateGroup/5/todoItem/2
         [HttpPut("TodoDateGroup/{groupID}/todoItem/{itemID}")]
-        public async Task<ActionResult<IEnumerable<TodoGroup>>> PutTodoItemDetail(TodoItem todoItems)
+        public async Task<ActionResult<IEnumerable<TodoGroup>>> PutTodoItem(TodoItem todoItems)
         {
             var todoGroup = await _context.TodoGroup.FindAsync(todoItems.TodoGroupId);
             if (todoGroup == null)
@@ -81,14 +81,13 @@ namespace TodoList.Controllers
             await _context.SaveChangesAsync();
 
             // return NoContent();
-            // return await ReturnTodoData();
-            return await ReturnTodoData(false);
+            return await ReturnTodoData();
         }
 
         // POST: api/TodoItems
         // [HttpPost]
         [HttpPost("TodoItems")]
-        public async Task<ActionResult<IEnumerable<TodoGroup>>> PostTodoItem(TodoGroup todoGroup) {
+        public async Task<ActionResult> PostTodoItem(TodoGroup todoGroup) {
             var getItemDate = todoGroup.ItemDate;
             var getItemText = todoGroup.TodoItems[0].ItemText;
             var maxItemID = await GetMaxItemID();
@@ -112,8 +111,8 @@ namespace TodoList.Controllers
                     SortId = maxItemID, 
                     TodoGroupId = maxGroupID
                 };
-                newTodoGroup.TodoItems.Add(newTodoItem);
 
+                newTodoGroup.TodoItems.Add(newTodoItem);
                 _context.TodoGroup.Add(newTodoGroup);
             } else {
                 // step 3: 如果存在，就只新增待辦事項
@@ -129,8 +128,8 @@ namespace TodoList.Controllers
             }
 
             await _context.SaveChangesAsync();
-            // return NoContent();
-            return await ReturnTodoData();
+            
+            return NoContent();
         }
 
         // DELETE: api/TodoItems/empty
