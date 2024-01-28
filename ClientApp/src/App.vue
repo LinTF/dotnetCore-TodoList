@@ -145,18 +145,8 @@
             async clearTodoList() {
                 const result = confirm("您確定要清空全部待辦事項嗎？")
                 if (result) {
-                    // this.todoItem = [];
-                    // localStorage.clear();
-
-
-                    
-                    // this.api_emptyData()
-                    //   .then(() => {
-                    //     // 再次取得資料
-                    //     this.getApi_todoData();
-                    //   });
-
-                    await this.$store.dispatch('Api_EmptyTodoData');
+                    await this.api_emptyTodoItems();
+                    await this.getApi_todoData();
             }
             },
             async apiTest() {
@@ -181,6 +171,9 @@
                 // this.$store.commit('setTestText', 'is test Mutations');
                 // console.log(this.$store.state.isOk);
                 console.log(await this.$store.dispatch('testGetApi'));
+            },
+            async api_emptyTodoItems() {
+                await this.$store.dispatch('Api_EmptyTodoData');
             }
         },
         computed: {

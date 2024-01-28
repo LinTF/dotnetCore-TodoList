@@ -56,7 +56,6 @@
 <script>
     import draggable from 'vuedraggable'
     import { formatDate } from '@/assets/js/formatDate';
-    import axios from 'axios'
 
     export default {
         name: 'todo',
@@ -77,36 +76,11 @@
             draggable
         },
         methods: {
-            async deleteTodoItem(dateID, itemID, date, itemText) {
+            async deleteTodoItem(groupID, itemID, date, itemText) {
                 const checkDelete = confirm("您確定要刪除 " + formatDate(date) + '：' + itemText + " 嗎？");
                 if (checkDelete) {
-                    // // 先找到要刪除的日期
-                    // const dateData = this.propsTodo.find(item => item.date === date);
-                    // // 計算該日期有幾筆資料
-                    // const dataCount = dateData.item.length;
-
-                    // // 如果資料量大於一筆，則刪除該項目，其他．則將該日期資料全刪除
-                    // if (dataCount > 1) {
-                    //     dateData.item.splice(itemIndex, 1);
-                    // } else {
-                    //     this.propsTodo.splice(dateIndex, 1);
-                    // }
-
-                    // // 切完之後畫面的刪除按鈕隱藏
-                    // this.showDelBtn(date)
-                    
-                    // // 將 localStorage 陣列裝回
-                    // localStorage.setItem('todoItem', JSON.stringify(this.propsTodo));
-
-                    // this.api_deleteItem(dateID, itemID)
-                    //     .then(() => {
-                    //         this.$emit('updatePropsTodo');
-                    //     });
-
-                    // await this.api_deleteItem(dateID, itemID);
-                    // this.$emit('updatePropsTodo');
-                    
-                    await this.$store.dispatch('Api_DeleteTodoItem', { dateID, itemID });
+                    await this.api_deleteItem(groupID, itemID);
+                    await this.getApi_todoData();
                 }
             },
             showDelBtn(dateVal) {
@@ -125,7 +99,7 @@
             },
             onStart() {
             },
-            onEnd(e) {
+            async onEnd(e) {
                 const newTodoList = JSON.parse(JSON.stringify(this.get_todoData));
                 const fromTodoID = e.from.closest('[data-id]').dataset.id;
                 const toTodoID = e.to.closest('[data-id]').dataset.id;
@@ -136,39 +110,39 @@
 
                 let putTodoItemData = [];
 
+                console.log("putTodoItemData:" + JSON.stringify(putTodoItemData));
+                console.log("onlyToItmeData:" + JSON.stringify(onlyToItmeData));
+
                 if (fromTodoID !== toTodoID) {
                     for (let i = 0; i < onlyFromItemData.length; i++) {
-                        let getTodoItemIdCol = onlyFromItemData[i].todoItemId
-                        getTodoItemIdCol = fromTodoID;
-                        putTodoItemData.push({ id: onlyFromItemData[i].id, todoItemId: getTodoItemIdCol })
+                        // let getTodoItemIdCol = onlyFromItemData[i].todoItemId
+                        // getTodoItemIdCol = fromTodoID;
+                        let getTodoItemIdCol = fromTodoID
+                        putTodoItemData.push({ id: onlyFromItemData[i].id, todoGroupId: getTodoItemIdCol })
                     }
                 }
 
                 for (let i = 0; i < onlyToItmeData.length; i++) {
-                    let getTodoItemIdCol = onlyToItmeData[i].todoItemId
-                    getTodoItemIdCol = toTodoID;
-                    putTodoItemData.push({ id: onlyToItmeData[i].id, todoItemId: getTodoItemIdCol })
+                    // let getTodoItemIdCol = onlyToItmeData[i].todoItemId
+                    // getTodoItemIdCol = toTodoID;
+                    let getTodoItemIdCol = toTodoID;
+                    putTodoItemData.push({ id: onlyToItmeData[i].id, todoGroupId: getTodoItemIdCol })
                 }
 
-                // api
-                // this.api_PutTodoItemSort(putTodoItemData)
-                //     .then(() => {
-                //         this.$emit('updatePropsTodo');
-                //     });
-
-                this.api_PutTodoItemSort(putTodoItemData)
+                await this.api_PutTodoItemSort(putTodoItemData);
+                await this.getApi_todoData();
             },
             async putApi_todoData(itemData) {
                 await this.$store.dispatch('Api_PutTodoData', itemData);
             },
-            async api_deleteItem(dateID, itemID) {
-                await axios.delete("https://localhost:7268/api/TodoItems/"+ dateID + "/TodoItemDetails/" + itemID);
+            async api_deleteItem(groupID, itemID) {
+                await this.$store.dispatch('Api_DeleteTodoItem', { groupID, itemID });
             },
             async api_PutTodoItemSort(detailData) {
-                // const url = "https://localhost:7268/api/TodoItems/Sort"
-                // await axios.put(url, detailData);
-
                 await this.$store.dispatch('Api_SortTodoItem', detailData);
+            },
+            async getApi_todoData() {
+                await this.$store.dispatch('Api_GetTodoData');
             }
         },
         computed: {

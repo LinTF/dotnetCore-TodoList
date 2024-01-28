@@ -25,20 +25,16 @@ export default createStore({
             await http.post("/TodoItems", payload);
         },
         async Api_EmptyTodoData(context) {
-            const { data } = await http.delete("/empty");
-            context.commit('setTodoData', data);
+            await http.delete("TodoItems/empty");
         },
         async Api_PutTodoData(context, payload) {
-            const { data } = await http.put("/TodoDateGroup/" + payload.groupID + "/todoItem/" + payload.id, payload);
-            context.commit('setTodoData', data);
+            await http.put("/TodoDateGroup/" + payload.groupID + "/todoItem/" + payload.id, payload);
         },
-        async Api_DeleteTodoItem(context, { dateID, itemID }) {
-            const { data } = await http.delete(dateID + "/TodoItemDetails/" + itemID);
-            context.commit('setTodoData', data);
+        async Api_DeleteTodoItem(context, { groupID, itemID }) {
+            await http.delete("TodoDateGroup/" + groupID + "/todoItem/" + itemID);
         },
         async Api_SortTodoItem(context, payload) {
-            const { data } = await http.put("/Sort", payload);
-            context.commit('setTodoData', data);
+            await http.put("TodoItems/Sort", payload);
         }
     },
     modules: {

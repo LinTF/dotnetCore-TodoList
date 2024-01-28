@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Razor.Language;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using NuGet.Protocol;
 using NuGet.Versioning;
 using TodoList.Models;
@@ -39,14 +41,16 @@ namespace TodoList.Controllers
         // PUT: api/TodoItems/Sort
         // [HttpPut("Sort")]
         [HttpPut("TodoItems/Sort")]
-        public async Task<ActionResult<IEnumerable<TodoGroup>>> PutTodoItemSort(List<TodoItem> todoItems)
+        public async Task<ActionResult> PutTodoItemSort(List<TodoItem> todoItems)
         {
         
-            for (int item = 0; item < todoItems.Count; item ++) {
+            var count = 0;
+            for (int item = todoItems.Count -1; item >= 0; item --) {
+                count += 1;
                 var itemID = todoItems[item].Id;
                 var sqlTodoItem = await _context.TodoItem.FindAsync(itemID);
                 if (sqlTodoItem != null) {
-                    sqlTodoItem.SortId = item + 1;
+                    sqlTodoItem.SortId = count;
                     sqlTodoItem.TodoGroupId = todoItems[item].TodoGroupId;
                     
                     _context.Entry(sqlTodoItem).State = EntityState.Modified;
@@ -54,14 +58,14 @@ namespace TodoList.Controllers
             }
             
             await _context.SaveChangesAsync();
-            return await ReturnTodoData();
+            return NoContent();
         }
 
         // PUT: api/TodoItems/5/item/2
         // [HttpPut("{id}/todoItems/{itemDetailsId}")]
         // PUT: api/TodoDateGroup/5/todoItem/2
         [HttpPut("TodoDateGroup/{groupID}/todoItem/{itemID}")]
-        public async Task<ActionResult<IEnumerable<TodoGroup>>> PutTodoItem(TodoItem todoItems)
+        public async Task<ActionResult> PutTodoItem(TodoItem todoItems)
         {
             var todoGroup = await _context.TodoGroup.FindAsync(todoItems.TodoGroupId);
             if (todoGroup == null)
@@ -80,8 +84,7 @@ namespace TodoList.Controllers
             _context.Entry(todoItem).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            // return NoContent();
-            return await ReturnTodoData();
+            return NoContent();
         }
 
         // POST: api/TodoItems
@@ -134,7 +137,7 @@ namespace TodoList.Controllers
 
         // DELETE: api/TodoItems/empty
         [HttpDelete("TodoItems/empty")]
-        public async Task<ActionResult<IEnumerable<TodoGroup>>> EmptyTodoItems()
+        public async Task<ActionResult> EmptyTodoItems()
         {
             if (_context.TodoGroup == null)
             {
@@ -149,12 +152,12 @@ namespace TodoList.Controllers
             _context.TodoItem.RemoveRange(_context.TodoItem);
             await _context.SaveChangesAsync();
 
-            return await ReturnTodoData(false);
+            return NoContent();
         }
 
         // DELETE: api/TodoItems/5/TodoItemDetails/6
         [HttpDelete("TodoDateGroup/{groupID}/todoItem/{itemID}")]
-        public async Task<ActionResult<IEnumerable<TodoGroup>>> DeleteTodoItem(int groupID, int itemID)
+        public async Task<ActionResult> DeleteTodoItem(int groupID, int itemID)
         {
             if (_context.TodoGroup == null)
             {
@@ -183,8 +186,7 @@ namespace TodoList.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            // return NoContent();
-            return await ReturnTodoData();
+            return NoContent();
         }
 
         private async Task<int> GetMaxGroupID() {
