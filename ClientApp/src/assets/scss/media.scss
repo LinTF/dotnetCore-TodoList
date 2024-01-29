@@ -1,0 +1,12 @@
+@media screen and (max-width: 767px) {
+    .btn-primary {
+        margin-top: 10px;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .not-left-right-padding {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+}

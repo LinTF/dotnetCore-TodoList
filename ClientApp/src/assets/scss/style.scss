@@ -33,3 +33,56 @@ h3 {
     font-size: 20px;
     color: #555555;
 }
+
+.todo-block {
+    padding: 0px 10px 10px 10px;
+    border-radius: 10px;
+    background-color: #fff;
+
+    .item {
+        border: 1px solid #f8e4cc;
+
+        &:hover{
+            border: 1px solid #d6279c;
+        }
+    }
+
+    .return {
+        color: #d4ac7c;
+        font-size: 14px;
+    }
+
+    .btn-danger {
+        font-size: 14px;
+    }
+}
+
+.date-black {
+    margin-bottom: 30px;
+}
+
+#edit-block {
+    margin-top: 20px;
+}
+
+.dropdown {
+    text-align: center;
+}
+
+hr {
+    border: 1px solid #ccc;
+    margin: 10px auto 30px auto;
+}
+
+.btn-primary  {
+    display: block;
+    margin: 0px auto 0px auto;
+}
+
+.btn-clear {
+    border: 1px solid #d4ac7c;
+    color: #d4ac7c;
+    display: block;
+    margin: 20px 10px 0px auto;
+    font-size: 12px;
+}

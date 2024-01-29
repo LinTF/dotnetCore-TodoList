@@ -32,47 +32,34 @@
                 </div>
             </div>
         </div>
-        <!-- <div>
-            <button type="submit" class="btn btn-primary mb-3" @click="apiTest">API</button>
-            <p>{{ getTestText }}</p>
-        </div> -->
         <hr />
     </div>
     <div class="container-fluid">
         <div class="row">
-            <!-- <todo :propsTodo="todoItemSort" /> -->
-            <todo :propsTodo="this.todoItem" @updatePropsTodo="getApi_todoData" />
+            <todo />
         </div>
     </div>
 </template>
   
 <script>
     import todo from "@/components/todo.vue"
-    import axios from 'axios'
-    // import { Action } from "vuex"
+    import { validDate } from '@/assets/js/validDate';
   
     export default {
         name: 'todoList',
         data() {
             return {
-                todoItem: [],
                 todoItemText: '',
-                selectedDate: ''
+                selectedDate: '',
+                validDate
             }
         },
         components: {
             todo
         },
         async created() {
-            await this.getApi_todoData();
-    
-            // 日期元件
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            this.selectedDate = `${year}-${month}-${day}`;
-    
+            await this.api_getTodoData();
+            this.selectedDate = this.getTodayDate;
             this.formatDelBtn();
         },
         methods: {
@@ -91,7 +78,13 @@
                 const todoDate = this.selectedDate;
 
                 // 判斷是否為日期
-                const isValidDate = this.isValidDate(todoDate);
+                const isValidDate = validDate(todoDate);
+                if (isValidDate === false) {
+                    alert("請輸入待辦日期");
+
+                    // 預設撈取當日日期
+                    this.selectedDate = this.getTodayDate;
+                }
 
                 // 判斷是否有輸入待辦事項文字
                 if (todoItemText === '') {
@@ -103,40 +96,19 @@
                     todoItem.push({ itemText: todoItemText });
 
                     let todoItemGroup = { itemDate: todoDate, TodoItems: todoItem };
-                    await this.api_postData(todoItemGroup);
-                    await this.getApi_todoData();
+                    await this.api_postTodoData(todoItemGroup);
+                    await this.api_getTodoData();
                 }
-
+                
                 // 清空輸入框
                 this.todoItemText = '';
 
                 // 還原預設隱藏刪除按鈕
                 this.formatDelBtn();
             },
-            isValidDate(dateString) {
-                // 將正確日期格式拆開
-                const [year, month, day] = dateString.split('-');
-        
-                // 檢查年份是否不小於 1911
-                if (year < 1911) {
-                    return false;
-                }
-        
-                // 檢查月份是否在 1 到 12 的範圍內
-                if (month < 1 || month > 12) {
-                    return false;
-                }
-    
-                // 檢查日期是否在合法範圍內
-                if (day < 1 || day > 31) {
-                    return false;
-                }
-        
-                return true;
-            },
             formatDelBtn() {
                 // 預設刪除按鈕隱藏
-                for (const item of this.todoItem) {
+                for (const item of this.get_todoData) {
                     if (item.isEdit) {
                         item.isEdit = false;
                     }
@@ -145,98 +117,36 @@
             async clearTodoList() {
                 const result = confirm("您確定要清空全部待辦事項嗎？")
                 if (result) {
-                    await this.api_emptyTodoItems();
-                    await this.getApi_todoData();
-            }
+                    await this.api_emptyTodoData();
+                    await this.api_getTodoData();
+                }
             },
-            async apiTest() {
-                const aaa = await axios.get("https://localhost:7268/api/TodoItems")
-                // const aaa = await axios.get("https://localhost:7268/api/TodoItems/2")
-
-                console.log(aaa.data);
-            },
-            async getApi_todoData() {
+            async api_getTodoData() {
                 await this.$store.dispatch('Api_GetTodoData');
             },
-            async api_emptyData() {
-                // const emptyApi = await axios.delete("https://localhost:7268/api/TodoItems/empty");
-                // emptyApi.data;
-
-                await axios.delete("https://localhost:7268/api/TodoItems/empty");
-            },
-            async api_postData(todoItemData) {
+            async api_postTodoData(todoItemData) {
                 await this.$store.dispatch('Api_PostTodoData', todoItemData);
             },
-            async testMutations() {
-                // this.$store.commit('setTestText', 'is test Mutations');
-                // console.log(this.$store.state.isOk);
-                console.log(await this.$store.dispatch('testGetApi'));
-            },
-            async api_emptyTodoItems() {
+            async api_emptyTodoData() {
                 await this.$store.dispatch('Api_EmptyTodoData');
             }
         },
         computed: {
-            // 待辦：排序從後端做，連資料庫之後改
-            todoItemSort() {
-                return this.todoItem.sort((a, b) => {
-                    const dateA = new Date(a.itemDate);
-                    const dateB = new Date(b.itemDate);
-
-                    return dateB - dateA;
-                });
+            get_todoData() {
+                return this.$store.state.todoData;
             },
-            getTestText() {
-                return "";
+            getTodayDate() {
+                // 日期元件
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
             }
         }
     }
 </script>
   
 <style scoped lang="scss">
-    #edit-block {
-      margin-top: 20px;
-    }
-  
-    .dropdown {
-      text-align: center;
-    }
-  
-    hr {
-      border: 1px solid #ccc;
-      margin: 10px auto 30px auto;
-    }
-  
-    .btn-primary  {
-      display: block;
-      margin: 0px auto 0px auto;
-    }
-  
-    .btn-clear {
-      border: 1px solid #d4ac7c;
-      color: #d4ac7c;
-      display: block;
-      margin: 20px 10px 0px auto;
-      font-size: 12px;
-    }
-  
-    @media screen and (max-width: 767px) {
-      .btn-primary {
-        margin-top: 10px;
-      }
-    }
-  
-    @media screen and (min-width: 768px) {
-      .not-left-right-padding {
-        padding-left: 0px;
-        padding-right: 0px;
-      }
-    }
-  
-    .testa {
-      background-color: #d4ac7c;
-    }
-    .testb {
-      background-color: #ccc;
-    }
+
 </style>
