@@ -15,8 +15,17 @@ builder.Services.AddCors(options =>
 // Add services to the container.
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<TodoContext>(opt =>
-    opt.UseInMemoryDatabase("TodoList"));
+// builder.Services.AddDbContext<TodoContext>(opt =>
+//     opt.UseInMemoryDatabase("TodoList"));
+
+//MySql
+builder.Services.AddDbContext<TodoContext>(options =>
+{
+   options.UseMySql(builder.Configuration.GetConnectionString("TodoContext") ?? throw new InvalidOperationException("TodoContext string 'TodoContext' not found."),
+   ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("TodoContext")));
+   options.EnableSensitiveDataLogging(true);  // 啟用敏感數據日誌
+   options.LogTo(Console.WriteLine, LogLevel.Information);  // 將日誌輸出到控制台
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
