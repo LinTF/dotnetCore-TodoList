@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TodoList.Models
 {
@@ -28,8 +29,9 @@ namespace TodoList.Models
         /// <value></value>
         public int SortId { get; set; }
 
-
+        [Column("groupID")]
         public int? TodoGroupId { get; set; }
+        
         [JsonIgnore]
         public TodoGroup? TodoGroup { get; set; }
     }
